@@ -42,13 +42,13 @@ public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel impl
                 if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) {
                     LATTICE_SIZE_FOR_DISCRETIZED_RATES = assignedBranchCount;
                 }
-                Log.info.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate "
+                Log.info.println("  UCRelaxedLineageClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate "
                         + "categories to approximate rate distribution across branches.");
             } else {
                 if (numberOfDiscreteRates.get() != -1) {
                     throw new RuntimeException("Can't specify both numberOfDiscreteRates and rateQuantiles inputs.");
                 }
-                Log.info.println("  UCRelaxedClockModel: using quantiles for rate distribution across branches.");
+                Log.info.println("  UCRelaxedLineageClockModel: using quantiles for rate distribution across branches.");
             }
 
             if (usingQuantiles) {
@@ -86,7 +86,8 @@ public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel impl
         Arrays.fill(map, -1);
         int index = 0;
         for (Node node : nodes) {
-            map[node.getNr()] = index++;
+            map[node.getNr()] = index;
+            index++;
         }
     }
     

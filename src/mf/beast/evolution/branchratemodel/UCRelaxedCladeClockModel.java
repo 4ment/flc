@@ -35,10 +35,11 @@ public class UCRelaxedCladeClockModel extends AbstractUCRelaxedClockModel implem
 	}
 
 	private void setUpMap(Node node) {
-		map[node.getNr()] = branchCladeCount++;
 		for (int i = 0; i < node.getChildCount(); i++) {
 			setUpMap(node.getChild(i));
 		}
+		map[node.getNr()] = branchCladeCount;
+		branchCladeCount++;
 	}
 	
 	private Node findMRCA(TaxonSet taxonSet, Node node, Set<String> descendants) {

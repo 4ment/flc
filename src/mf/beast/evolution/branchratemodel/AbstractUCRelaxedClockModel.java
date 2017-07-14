@@ -66,13 +66,13 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
         if (!usingQuantiles) {
             LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
             if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) LATTICE_SIZE_FOR_DISCRETIZED_RATES = assignedBranchCount;
-            Log.info.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate " +
+            Log.info.println("  AbstractUCRelaxedClockModel: " + this.ID +" using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate " +
                     "categories to approximate rate distribution across branches.");
         } else {
             if (numberOfDiscreteRates.get() != -1) {
                 throw new RuntimeException("Can't specify both numberOfDiscreteRates and rateQuantiles inputs.");
             }
-            Log.info.println("  UCRelaxedClockModel: using quantiles for rate distribution across branches.");
+            Log.info.println("  AbstractUCRelaxedClockModel " + this.ID +" using quantiles for rate distribution across branches.");
         }
 
         if (usingQuantiles) {
