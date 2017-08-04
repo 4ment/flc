@@ -24,8 +24,8 @@ public class ExtendedLocalClockModel extends BranchRateModel.Base {//Calculation
     
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this local clock is associated with.", Input.Validate.REQUIRED);
 
-    LineageRateModel rootRateModel;
-    List<CladeRateModel> cladeRateModels;
+    private LineageRateModel rootRateModel;
+    private List<CladeRateModel> cladeRateModels;
     Tree tree;
 
     private Map<Integer, BranchRateModel> nodeClockMap = new HashMap<Integer, BranchRateModel>();
@@ -129,5 +129,22 @@ public class ExtendedLocalClockModel extends BranchRateModel.Base {//Calculation
                 preorderTraverse(node.getChild(i));
             }
         }
+    }
+
+    public Map<Integer, BranchRateModel> getClockMap(){
+        return nodeClockMap;
+    }
+
+    // Number of local clock + ancestral clock
+    public int getNumberOfClocks(){
+        return cladeRateModels.size()+1;
+    }
+
+    public List<CladeRateModel> getCladeRateModels(){
+        return cladeRateModels;
+    }
+
+    public LineageRateModel getrootRateModel(){
+        return rootRateModel;
     }
 }
