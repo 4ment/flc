@@ -42,7 +42,7 @@ public class ExtendedLocalClockModel extends BranchRateModel.Base {//Calculation
 
         Set<Node> nodes = new HashSet<Node>();
         for (Integer nodeNr : nodeClockMap.keySet()) {
-            if (nodeClockMap.get(nodeNr).equals(rootRateModel)) {
+            if (nodeClockMap.get(nodeNr).equals(rootRateModel) && nodeNr != tree.getRoot().getNr()) {
                 Node node = tree.getNode(nodeNr);
                 nodes.add(node);
             }
