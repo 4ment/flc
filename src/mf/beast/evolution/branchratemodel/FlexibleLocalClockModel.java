@@ -15,9 +15,9 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
 // TreeLikelihood contains a reference to a abstract BranchRateModel.Base object as input, not a BranchModel interface
-@Description("Defines an extended local clock model.")
+@Description("Defines a flexible local clock model.")
 @Citation(value = "Fourment M and Darling A (2017) title", DOI = "", year = 2017, firstAuthorSurname = "fourment")
-public class ExtendedLocalClockModel extends BranchRateModel.Base {//CalculationNode implements BranchRateModel {
+public class FlexibleLocalClockModel extends BranchRateModel.Base {//CalculationNode implements BranchRateModel {
 
     public Input<LineageRateModel> rootRateModelInput = new Input<LineageRateModel>("rootClockModel", "the branch rate model for branchs that do not belong to a local clock.", Input.Validate.REQUIRED);
     public Input<List<CladeRateModel>> cladeRateModelInputs = new Input<List<CladeRateModel>>("cladeClockModel", "List of clades containing a rate (strict or UC relaxed clock).", new ArrayList<CladeRateModel>());

@@ -14,9 +14,9 @@ import java.util.List;
 /**
  * Created by mathieu on 20/07/2017.
  */
-public class CLOCRateStatistic extends RateStatistic {
+public class FLCRateStatistic extends RateStatistic {
 
-    private ExtendedLocalClockModel branchModel;
+    private FlexibleLocalClockModel branchModel;
     private List<List<Double>> rates;
     private List<List<Double>> branchLengths;
 
@@ -25,7 +25,7 @@ public class CLOCRateStatistic extends RateStatistic {
     @Override
     public void initAndValidate() {
         super.initAndValidate();
-        branchModel = (ExtendedLocalClockModel)branchRateModelInput.get();
+        branchModel = (FlexibleLocalClockModel)branchRateModelInput.get();
         int clockCount = branchModel.getNumberOfClocks();
         rates = new ArrayList<List<Double>>(clockCount);
         branchLengths = new ArrayList<List<Double>>(clockCount);
@@ -49,7 +49,6 @@ public class CLOCRateStatistic extends RateStatistic {
     @Override
     public void init(final PrintStream out) {
         super.init(out);
-
         for(BranchRateModel brm : map.keySet()){
             BranchRateModel.Base brm2 = (BranchRateModel.Base)brm;
             String id = brm2.getID();

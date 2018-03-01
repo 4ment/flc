@@ -94,7 +94,7 @@ name="alignment">
 <map name="InverseGamma" >beast.math.distributions.InverseGamma</map>
 <map name="OneOnX" >beast.math.distributions.OneOnX</map>
 
-<branchRateModel spec='mf.beast.evolution.branchratemodel.ExtendedLocalClockModel' id="branchRates" tree='@Tree.t:fluA'>                
+<branchRateModel spec='mf.beast.evolution.branchratemodel.FlexibleLocalClockModel' id="branchRates" tree='@Tree.t:fluA'>
 	<rootClockModel id="rate.old" clock.rate="@ucldMean.old" rateCategories="@rateCategories.old" spec="mf.beast.evolution.branchratemodel.UCRelaxedLineageClockModel" tree="@Tree.t:fluA">
 		<LogNormal S="@ucldStdev.old" id="LogNormalDistributionModel.old" meanInRealSpace="true" name="distr">
 			<parameter estimate="false" id="RealParameter.011" lower="0.0" name="M" upper="1.0" value="1.0"/>
@@ -109,11 +109,7 @@ name="alignment">
 	</cladeClockModel>
 </branchRateModel>
 
-<run spec='beast.inference.PathSampler' chainLength="10000000" alpha='0.3' rootdir='.' burnInPercentage='50' preBurnin="50000" deleteOldLogs='true' nrOfSteps='8'>
-cd $(dir)
-java -cp $(java.class.path) beast.app.beastapp.BeastMain $(resume/overwrite) -java -seed $(seed) beast.xml
-
-<mcmc chainLength="10000000" id="mcmc" spec="MCMC">
+<run chainLength="10000000" id="mcmc" spec="MCMC">
     <state id="state" storeEvery="5000">
         <tree id="Tree.t:fluA" name="stateNode">
             <trait id="dateTrait.t:fluA" spec="beast.evolution.tree.TraitSet" traitname="date">
@@ -389,6 +385,7 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
         <log idref="popSize.t:fluA"/>
         <log idref="CoalescentConstant.t:fluA"/>
         <log idref="freqParameter.s:fluA"/>
+        <log id="rate.c:fluA" spec="mf.beast.evolution.branchratemodel.FLCRateStatistic" branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
     </logger>
 
     <logger id="screenlog" logEvery="1000">
@@ -403,7 +400,6 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
     <logger id="treelog.t:fluA" fileName="$(tree).trees" logEvery="1000" mode="tree">
         <log id="TreeWithMetaDataLogger.t:fluA" spec="beast.evolution.tree.TreeWithMetaDataLogger" branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
     </logger>
-</mcmc>
 </run>
 
 </beast>
