@@ -61,7 +61,7 @@ public class FLCRateStatistic extends RateStatistic {
 
 
     @Override
-    public void log(final int sample, final PrintStream out) {
+    public void log(final long sample, final PrintStream out) {
         super.log(sample, out);
 
         for (int i = 0; i < rates.size(); i++){
