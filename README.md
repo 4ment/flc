@@ -13,8 +13,6 @@ There are two ways to install a package in BEAST2:
 The BEAST2 website has a blog [post](https://www.beast2.org/managing-packages/) dedicated to this task. This package is not part of the official package repository so you need to register this package first.
 
 - Open BEAUTi, click on `Manage Packages` menu the in the `File` menu. This will open a window showing the package names.
-- Click on the `Package repositories` button, then click on the `Add URL` button.
-- Write the following url `https://4ment.github.io/assets/beast2/packages.xml` in the new window. Click `Done` to close the window.
 - Locate and select the package name `FLC` in the table and click the `Install/Upgrade` button.
 - Close the window et voila the package should be installed.
 
