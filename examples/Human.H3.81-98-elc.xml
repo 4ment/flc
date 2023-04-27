@@ -480,7 +480,7 @@
                  branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
         </logger>
 
-        <logger id="screenlog" logEvery="1000">
+        <logger id="screenlog" logEvery="100000">
             <log idref="posterior"/>
             <log id="ESS.0" spec="util.ESS" arg="@posterior"/>
             <log idref="likelihood"/>
