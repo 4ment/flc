@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
-import beast.evolution.tree.Node;
-import beast.util.Randomizer;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.core.Log;
+import beast.base.evolution.tree.Node;
+import beast.base.util.Randomizer;
 
 // Lets hope that the SwapOperator on rateCategories is constructed AFTER initializeNodeAssignment() is called
 public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel implements LineageRateModel {

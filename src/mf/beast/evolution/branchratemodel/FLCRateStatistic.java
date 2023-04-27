@@ -1,9 +1,9 @@
 package mf.beast.evolution.branchratemodel;
 
-import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.branchratemodel.RateStatistic;
-import beast.evolution.tree.Node;
-import beast.math.statistic.DiscreteStatistics;
+import beast.base.evolution.branchratemodel.BranchRateModel;
+import beast.base.evolution.RateStatistic;
+import beast.base.evolution.tree.Node;
+import beast.base.util.DiscreteStatistics;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
