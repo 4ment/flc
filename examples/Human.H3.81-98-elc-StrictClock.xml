@@ -163,20 +163,13 @@
 
     <branchRateModel spec='mf.beast.evolution.branchratemodel.FlexibleLocalClockModel' id="branchRates"
                      tree='@Tree.t:fluA'>
-        <rootClockModel id="rate.old" clock.rate="@ucldMean.old" rateCategories="@rateCategories.old"
-                        spec="mf.beast.evolution.branchratemodel.UCRelaxedLineageClockModel" tree="@Tree.t:fluA">
-            <LogNormal S="@ucldStdev.old" id="LogNormalDistributionModel.old" meanInRealSpace="true" name="distr">
-                <parameter estimate="false" id="RealParameter.011" lower="0.0" name="M" upper="1.0" value="1.0"/>
-            </LogNormal>
+        <rootClockModel id="rate.old"
+                        spec="mf.beast.evolution.branchratemodel.StrictLineageClockModel" clock.rate="@clockRate.old">
         </rootClockModel>
 
-        <cladeClockModel id="rate.new" clock.rate="@ucldMean.new" rateCategories="@rateCategories.new"
-                         spec="mf.beast.evolution.branchratemodel.UCRelaxedMultiCladeClockModel" tree="@Tree.t:fluA">
-            <clade id="new.clade" spec="mf.beast.evolution.branchratemodel.Clade" taxonset="@taxonset.new"
-                   includeStem="true"/>
-            <LogNormal S="@ucldStdev.new" id="LogNormalDistributionModel.new" meanInRealSpace="true" name="distr">
-                <parameter estimate="false" id="RealParameter.0111" lower="0.0" name="M" upper="1.0" value="1.0"/>
-            </LogNormal>
+        <cladeClockModel id="rate.new"
+                         spec="mf.beast.evolution.branchratemodel.StrictCladeModel" taxonset="@taxonset.new"
+                   includeStem="true" clock.rate="@clockRate.new">
         </cladeClockModel>
     </branchRateModel>
 
@@ -262,13 +255,8 @@
             <parameter id="gammaShape.s:fluA" name="stateNode">0.5</parameter>
             <parameter id="kappa.s:fluA" lower="0.0" name="stateNode">2.0</parameter>
 
-            <parameter id="ucldMean.old" name="stateNode" value="0.003"/>
-            <parameter id="ucldStdev.old" lower="0.0" name="stateNode" upper="5.0" value="0.5"/>
-            <stateNode dimension="10" id="rateCategories.old" spec="parameter.IntegerParameter" value="1"/>
-
-            <parameter id="ucldMean.new" name="stateNode" value="0.003"/>
-            <parameter id="ucldStdev.new" lower="0.0" name="stateNode" upper="5.0" value="0.5"/>
-            <stateNode dimension="10" id="rateCategories.new" spec="parameter.IntegerParameter" value="1"/>
+            <parameter id="clockRate.old" name="stateNode">1.0</parameter>
+            <parameter id="clockRate.new" name="stateNode">1.0</parameter>
 
             <parameter id="popSize.t:fluA" name="stateNode">0.3</parameter>
             <parameter id="freqParameter.s:fluA" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
@@ -290,28 +278,6 @@
                                    tree="@Tree.t:fluA"/>
                 </distribution>
 
-                <prior id="MeanRatePrior.old" name="distribution" x="@ucldMean.old">
-                    <Exponential id="Exponential.mean.old" name="distr">
-                        <parameter estimate="false" id="RealParameter.old" name="mean" value="0.3333"/>
-                    </Exponential>
-                </prior>
-                <prior id="ucldStdevPrior.old" name="distribution" x="@ucldStdev.old">
-                    <Exponential id="Exponential.0" name="distr">
-                        <parameter estimate="false" id="RealParameter.010" name="mean" value="0.3333"/>
-                    </Exponential>
-                </prior>
-
-                <prior id="MeanRatePrior.new" name="distribution" x="@ucldMean.new">
-                    <Exponential id="Exponential.mean.new" name="distr">
-                        <parameter estimate="false" id="RealParameter.new.0" name="mean" value="0.003"/>
-                    </Exponential>
-                </prior>
-                <prior id="ucldStdevPrior.new" name="distribution" x="@ucldStdev.new">
-                    <Exponential id="Exponential.new" name="distr">
-                        <parameter estimate="false" id="RealParameter.new" name="mean" value="0.3333"/>
-                    </Exponential>
-                </prior>
-
                 <prior id="GammaShapePrior.s:fluA" name="distribution" x="@gammaShape.s:fluA">
                     <Exponential id="Exponential.0a" name="distr">
                         <parameter id="RealParameter.0" estimate="false" name="mean">1.0</parameter>
@@ -326,6 +292,20 @@
                 <prior id="PopSizePrior.t:fluA" name="distribution" x="@popSize.t:fluA">
                     <OneOnX id="OneOnX.1" name="distr"/>
                 </prior>
+
+                <!-- clock rate priors   -->
+                <prior id="clockRatePrior.old" name="distribution" x="@clockRate.old">
+                    <Exponential id="Exponential.mean.old" name="distr">
+                        <parameter estimate="false" id="RealParameter.old" name="mean" value="0.3333"/>
+                    </Exponential>
+                </prior>
+
+                <prior id="clockRatePrior.new" name="distribution" x="@clockRate.new">
+                    <Exponential id="Exponential.mean.new" name="distr">
+                        <parameter estimate="false" id="RealParameter.new.0" name="mean" value="0.003"/>
+                    </Exponential>
+                </prior>
+
             </distribution>
 
             <distribution id="new.prior" monophyletic="true" spec="beast.base.evolution.tree.MRCAPrior"
@@ -396,47 +376,19 @@
             </distribution>
         </distribution>
 
+
+        <!--  clock rate operators  -->
+        <operator id="clockRate.old.scaler" spec="ScaleOperator" parameter="@clockRate.old" scaleFactor="0.5"
+                  weight="0.1"/>
+
+        <operator id="clockRate.new.scaler" spec="ScaleOperator" parameter="@clockRate.new" scaleFactor="0.5"
+                  weight="0.1"/>
+
         <operator id="gammaShapeScaler.s:fluA" spec="ScaleOperator" parameter="@gammaShape.s:fluA" scaleFactor="0.5"
                   weight="0.1"/>
 
         <operator id="KappaScaler.s:fluA" spec="ScaleOperator" parameter="@kappa.s:fluA" scaleFactor="0.5"
                   weight="0.1"/>
-
-        <operator id="randomClockUpDownOperator.c:fluA" spec="UpDownOperator" scaleFactor="0.75" weight="3.0">
-            <parameter idref="ucldMean.new" name="up"/>
-            <parameter idref="ucldMean.old" name="up"/>
-
-            <down idref="Tree.t:fluA"/>
-        </operator>
-
-        <!-- new rate -->
-        <operator id="ucldMeanScaler.new" parameter="@ucldMean.new" scaleFactor="0.5" spec="ScaleOperator"
-                  weight="1.0"/>
-
-        <operator id="ucldStdevScaler.new" parameter="@ucldStdev.new" scaleFactor="0.5" spec="ScaleOperator"
-                  weight="3.0"/>
-
-        <operator id="CategoriesRandomWalk.new" parameter="@rateCategories.new" spec="IntRandomWalkOperator"
-                  weight="10.0" windowSize="1"/>
-
-        <operator id="CategoriesSwapOperator.new" intparameter="@rateCategories.new" spec="SwapOperator" weight="10.0"/>
-
-        <operator id="CategoriesUniform.new" parameter="@rateCategories.new" spec="UniformOperator" weight="10.0"/>
-
-        <!-- old rate -->
-        <operator id="ucldMeanScaler.old" parameter="@ucldMean.old" scaleFactor="0.5" spec="ScaleOperator"
-                  weight="1.0"/>
-
-        <operator id="ucldStdevScaler.old" parameter="@ucldStdev.old" scaleFactor="0.5" spec="ScaleOperator"
-                  weight="3.0"/>
-
-        <operator id="CategoriesRandomWalk.old" parameter="@rateCategories.old" spec="IntRandomWalkOperator"
-                  weight="10.0" windowSize="1"/>
-
-        <operator id="CategoriesSwapOperator.old" intparameter="@rateCategories.old" spec="SwapOperator" weight="10.0"/>
-
-        <operator id="CategoriesUniform.old" parameter="@rateCategories.old" spec="UniformOperator" weight="10.0"/>
-
 
         <operator id="CoalescentConstantTreeScaler.t:fluA" spec="ScaleOperator" scaleFactor="0.5" tree="@Tree.t:fluA"
                   weight="3.0"/>
@@ -461,7 +413,7 @@
             <parameter idref="freqParameter.s:fluA"/>
         </operator>
 
-        <logger id="tracelog" fileName="fluA.$(seed).log" logEvery="1000" model="@posterior" sanitiseHeaders="true"
+        <logger id="tracelog" fileName="fluA-strictClock.$(seed).log" logEvery="1000" model="@posterior" sanitiseHeaders="true"
                 sort="smart">
             <log idref="posterior"/>
             <log idref="likelihood"/>
@@ -470,14 +422,12 @@
             <log id="TreeHeight.t:fluA" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@Tree.t:fluA"/>
             <log idref="gammaShape.s:fluA"/>
             <log idref="kappa.s:fluA"/>
-            <parameter idref="ucldMean.old" name="log"/>
-            <parameter idref="ucldMean.new" name="log"/>
+            <log idref="clockRate.old"/>
+            <log idref="clockRate.new"/>
 
             <log idref="popSize.t:fluA"/>
             <log idref="CoalescentConstant.t:fluA"/>
             <log idref="freqParameter.s:fluA"/>
-            <log id="rate.c:fluA" spec="mf.beast.evolution.branchratemodel.FLCRateStatistic"
-                 branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
         </logger>
 
         <logger id="screenlog" logEvery="100000">
@@ -485,11 +435,11 @@
             <log id="ESS.0" spec="util.ESS" arg="@posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
-            <parameter idref="ucldMean.old" name="log"/>
-            <parameter idref="ucldMean.new" name="log"/>
+            <log idref="clockRate.old"/>
+            <log idref="clockRate.new"/>
         </logger>
 
-        <logger id="treelog.t:fluA" fileName="fluA.$(seed).trees" logEvery="1000" mode="tree">
+        <logger id="treelog.t:fluA" fileName="fluA-strictClock.$(seed).trees" logEvery="1000" mode="tree">
             <log id="TreeWithMetaDataLogger.t:fluA" spec="beast.base.evolution.TreeWithMetaDataLogger"
                  branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
         </logger>
