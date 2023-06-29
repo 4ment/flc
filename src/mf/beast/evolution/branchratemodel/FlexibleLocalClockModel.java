@@ -31,6 +31,9 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
 
     private Map<Integer, BranchRateModel> nodeClockMap = new HashMap<Integer, BranchRateModel>();
 
+    private Map<Integer, BranchRateModel> nodeClockMapStored = new HashMap<Integer, BranchRateModel>();
+
+
     @Override
     public void initAndValidate() {
         tree = treeInput.get();
@@ -50,6 +53,68 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
         }
 
         rootRateModel.initializeNodeAssignment(nodes);
+
+//        System.out.println("root map");
+//        for (int i: rootRateModel.getMap()) {
+//            System.out.print(i + " ");
+//        }
+    }
+
+    public void updateNodeIndex() {
+        cladeRateModels = cladeRateModelInputs.get();
+        rootRateModel = rootRateModelInput.get();
+
+        nodeClockMap = new HashMap<Integer, BranchRateModel>();
+
+        nodeClockMap.put(tree.getRoot().getNr(), rootRateModel);
+        postorderTraverse(tree.getRoot());
+        preorderTraverse(tree.getRoot());
+//        System.out.println(nodeClockMap);
+        // node assignments
+        Set<Node> nodes = new HashSet<Node>();
+        for (Integer nodeNr : nodeClockMap.keySet()) {
+            if (nodeClockMap.get(nodeNr).equals(rootRateModel) && nodeNr != tree.getRoot().getNr()) {
+                Node node = tree.getNode(nodeNr);
+                nodes.add(node);
+            }
+        }
+        rootRateModel.initializeNodeAssignment(nodes);
+    }
+
+    @Override
+    protected boolean requiresRecalculation() {
+        if (isStrictClockLineage(rootRateModel) && isStrictClockClade(cladeRateModels)) {
+            // update node indices for clock models
+            updateNodeIndex();
+        }
+        return true;
+    }
+
+    private boolean isStrictClockLineage(LineageRateModel model) {
+        return model instanceof StrictLineageClockModel;
+    }
+
+    private boolean isStrictClockClade(List<CladeRateModel> cladeList) {
+        for (CladeRateModel model: cladeList) {
+            if (!(model instanceof StrictCladeModel)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    protected void store() {
+        // store nodeClockMap
+        nodeClockMapStored = nodeClockMap;
+        super.store();
+    }
+
+    @Override
+    protected void restore() {
+        // restore nodeClockMap
+        nodeClockMap = nodeClockMapStored;
+        super.restore();
     }
 
     @Override
@@ -57,8 +122,12 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
         if (node.isRoot()) {
             return 1;
         }
-
+//        System.out.println("getRateForBranch FLC");
         BranchRateModel clock = nodeClockMap.get(node.getNr());
+//        System.out.println(nodeClockMap);
+//        System.out.println("clock ");
+//        System.out.println(clock);
+//        System.out.println("clock.getRateForBranch(" + node.getNr() + ") = " + clock.getRateForBranch(node));
         return clock.getRateForBranch(node);
     }
 
@@ -74,11 +143,13 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
             // includeStem is not checked since it is assumed to be true (otherwise the cladeRateModel is useless)
             for (CladeRateModel rateModel : cladeRateModels) {
             	int i = 0;
-            	for( ; i < rateModel.getTaxonSetCount(); i++){
+            	while(i < rateModel.getTaxonSetCount()){
+                    // set clade rate model where the clade is a single taxa
 	                if (rateModel.getTaxonSet(i).getTaxaNames().equals(descendants)) {
 	                    nodeClockMap.put(node.getNr(), rateModel);
 	                    break;
 	                }
+                    i++;
             	}
             	if(i != rateModel.getTaxonSetCount()){
             		break;
@@ -95,7 +166,7 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
             if (!node.isRoot()) {
                 for (CladeRateModel rateModel : cladeRateModels) {
                 	int i = 0;
-                	for( ; i < rateModel.getTaxonSetCount(); i++){
+                	while(i < rateModel.getTaxonSetCount()){
 	                    if (rateModel.getTaxonSet(i).getTaxaNames().equals(descendants)) {
 	                        // Here starts a new clock
 	                        if (rateModel.includeStem(i)) {
@@ -109,6 +180,7 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
 	                        }
 	                        break;
 	                    }
+                        i++;
                 	}
                 	if(i != rateModel.getTaxonSetCount()){
                 		break;
@@ -121,7 +193,6 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
 
     // Set up nodeClockMap for other nodes by inheriting the parent rate model
     private void preorderTraverse(Node node) {
-
         if (!nodeClockMap.containsKey(node.getNr())) {
             nodeClockMap.put(node.getNr(), nodeClockMap.get(node.getParent().getNr()));
         }
@@ -138,7 +209,7 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
 
     // Number of local clock + ancestral clock
     public int getNumberOfClocks(){
-        return cladeRateModels.size()+1;
+        return cladeRateModels.size() + 1;
     }
 
     public List<CladeRateModel> getCladeRateModels(){

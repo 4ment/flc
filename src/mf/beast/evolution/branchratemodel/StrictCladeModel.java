@@ -43,4 +43,7 @@ public class StrictCladeModel extends CladeRateModel.Base {
     }
 
     private double mu = 1.0;
+
+    @Override
+    public void updateNodeIndex() {}
 }

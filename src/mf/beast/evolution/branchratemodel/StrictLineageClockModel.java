@@ -19,8 +19,16 @@ public class StrictLineageClockModel extends StrictClockModel implements Lineage
     }
 
     @Override
+    public void updateNodeIndex(Set<Node> nodes) {}
+
+    @Override
     public Set<Node> getNodes() {
         return Collections.unmodifiableSet(nodes);
+    }
+
+    @Override
+    public int[] getMap() {
+        return new int[] {1};
     }
 
 }
