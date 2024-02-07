@@ -1,16 +1,16 @@
-package mf.beast.evolution.branchratemodel;
+package beast.base.evolution.branchratemodel;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.evolution.branchratemodel.BranchRateModel;
-import beast.math.distributions.ParametricDistribution;
-import beast.util.Randomizer;
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.core.Log;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.branchratemodel.BranchRateModel;
+import beast.base.inference.distribution.ParametricDistribution;
+import beast.base.util.Randomizer;
 import org.apache.commons.math.MathException;
 
 import java.util.Arrays;
@@ -110,7 +110,7 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
         }
         normalize = normalizeInput.get();
 
-        meanRate = meanRateInput.get();
+        meanRate = (RealParameter) meanRateInput.get();
         if (meanRate == null) {
             meanRate = new RealParameter("1.0");
         }

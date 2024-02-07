@@ -1,9 +1,9 @@
-package mf.beast.evolution.branchratemodel;
+package beast.base.evolution.branchratemodel;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.alignment.TaxonSet;
+import beast.base.core.BEASTObject;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.TaxonSet;
 
 @Description("Defines a simple clade object.")
 public class Clade extends BEASTObject{

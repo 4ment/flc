@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="" version="2.4">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.base.core:beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.evolution.datatype.Nucleotide:beast.base.evolution.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="" version="2.4">
 
 
     <data
@@ -76,43 +76,43 @@ name="alignment">
                     </data>
 
 
-    
 
 
-    
 
 
-    
-<map name="Uniform" >beast.math.distributions.Uniform</map>
-<map name="Exponential" >beast.math.distributions.Exponential</map>
-<map name="LogNormal" >beast.math.distributions.LogNormalDistributionModel</map>
-<map name="Normal" >beast.math.distributions.Normal</map>
-<map name="Beta" >beast.math.distributions.Beta</map>
-<map name="Gamma" >beast.math.distributions.Gamma</map>
-<map name="LaplaceDistribution" >beast.math.distributions.LaplaceDistribution</map>
-<map name="prior" >beast.math.distributions.Prior</map>
-<map name="InverseGamma" >beast.math.distributions.InverseGamma</map>
-<map name="OneOnX" >beast.math.distributions.OneOnX</map>
 
-<branchRateModel spec='mf.beast.evolution.branchratemodel.FlexibleLocalClockModel' id="branchRates" tree='@Tree.t:fluA'>
-	<rootClockModel id="rate.old" clock.rate="@ucldMean.old" rateCategories="@rateCategories.old" spec="mf.beast.evolution.branchratemodel.UCRelaxedLineageClockModel" tree="@Tree.t:fluA">
+
+
+    <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
+    <map name="Exponential" >beast.base.inference.distribution.Exponential</map>
+    <map name="LogNormal" >beast.base.inference.distribution.LogNormalDistributionModel</map>
+    <map name="Normal" >beast.base.inference.distribution.Normal</map>
+    <map name="Beta" >beast.base.inference.distribution.Beta</map>
+    <map name="Gamma" >beast.base.inference.distribution.Gamma</map>
+    <map name="LaplaceDistribution" >beast.base.inference.distribution.LaplaceDistribution</map>
+    <map name="prior" >beast.base.inference.distribution.Prior</map>
+    <map name="InverseGamma" >beast.base.inference.distribution.InverseGamma</map>
+    <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
+
+<branchRateModel spec='beast.base.evolution.branchratemodel.FlexibleLocalClockModel' id="branchRates" tree='@Tree.t:fluA'>
+	<rootClockModel id="rate.old" clock.rate="@ucldMean.old" rateCategories="@rateCategories.old" spec="beast.base.evolution.branchratemodel.UCRelaxedLineageClockModel" tree="@Tree.t:fluA">
 		<LogNormal S="@ucldStdev.old" id="LogNormalDistributionModel.old" meanInRealSpace="true" name="distr">
 			<parameter estimate="false" id="RealParameter.011" lower="0.0" name="M" upper="1.0" value="1.0"/>
 		</LogNormal>
 	</rootClockModel>
 					
-	<cladeClockModel id="rate.new" clock.rate="@ucldMean.new" rateCategories="@rateCategories.new" spec="mf.beast.evolution.branchratemodel.UCRelaxedMultiCladeClockModel" tree="@Tree.t:fluA">
-		<clade id="new.clade" spec="mf.beast.evolution.branchratemodel.Clade" taxonset="@taxonset.new" includeStem="true"/>
+	<cladeClockModel id="rate.new" clock.rate="@ucldMean.new" rateCategories="@rateCategories.new" spec="beast.base.evolution.branchratemodel.UCRelaxedMultiCladeClockModel" tree="@Tree.t:fluA">
+		<clade id="new.clade" spec="beast.base.evolution.branchratemodel.Clade" taxonset="@taxonset.new" includeStem="true"/>
 		<LogNormal S="@ucldStdev.new" id="LogNormalDistributionModel.new" meanInRealSpace="true" name="distr">
 			<parameter estimate="false" id="RealParameter.0111" lower="0.0" name="M" upper="1.0" value="1.0"/>
 		</LogNormal>
 	</cladeClockModel>
 </branchRateModel>
 
-<run chainLength="10000000" id="mcmc" spec="MCMC">
+<run chainLength="10000000" id="mcmc" spec="beast.base.inference.MCMC">
     <state id="state" storeEvery="5000">
         <tree id="Tree.t:fluA" name="stateNode">
-            <trait id="dateTrait.t:fluA" spec="beast.evolution.tree.TraitSet" traitname="date">
+            <trait id="dateTrait.t:fluA" spec="beast.base.evolution.tree.TraitSet" traitname="date">
                 A_Belgium_2_1981=1981.0,
 A_ChristHospital_231_1982=1982.0,
 A_Philippines_2_1982=1982.0,
@@ -192,27 +192,27 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
 
 		<parameter id="ucldMean.old" name="stateNode" value="0.003"/>
         <parameter id="ucldStdev.old" lower="0.0" name="stateNode" upper="5.0" value="0.5"/>
-        <stateNode dimension="10" id="rateCategories.old" spec="parameter.IntegerParameter" value="1"/>
+        <stateNode dimension="10" id="rateCategories.old" spec="beast.base.inference.parameter.IntegerParameter" value="1"/>
         
         <parameter id="ucldMean.new" name="stateNode" value="0.003"/>
         <parameter id="ucldStdev.new" lower="0.0" name="stateNode" upper="5.0" value="0.5"/>
-        <stateNode dimension="10" id="rateCategories.new" spec="parameter.IntegerParameter" value="1"/>
+        <stateNode dimension="10" id="rateCategories.new" spec="beast.base.inference.parameter.IntegerParameter" value="1"/>
         
         <parameter id="popSize.t:fluA" name="stateNode">0.3</parameter>
         <parameter id="freqParameter.s:fluA" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
     </state>
 
-    <init id="RandomTree.t:fluA" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:fluA" taxa="@fluA">
+    <init id="RandomTree.t:fluA" spec="beast.base.evolution.tree.coalescent.RandomTree" estimate="false" initial="@Tree.t:fluA" taxa="@fluA">
         <populationModel id="ConstantPopulation0.t:fluA" spec="ConstantPopulation">
             <parameter id="randomPopSize.t:fluA" name="popSize">1.0</parameter>
         </populationModel>
     </init>
 
-    <distribution id="posterior" spec="util.CompoundDistribution">
-        <distribution id="prior" spec="util.CompoundDistribution">
+    <distribution id="posterior" spec="beast.base.inference.CompoundDistribution">
+        <distribution id="prior" spec="beast.base.inference.CompoundDistribution">
             <distribution id="CoalescentConstant.t:fluA" spec="Coalescent">
                 <populationModel id="ConstantPopulation.t:fluA" spec="ConstantPopulation" popSize="@popSize.t:fluA"/>
-                <treeIntervals id="TreeIntervals.t:fluA" spec="TreeIntervals" tree="@Tree.t:fluA"/>
+                <treeIntervals id="TreeIntervals.t:fluA" spec="beast.base.evolution.tree.TreeIntervals" tree="@Tree.t:fluA"/>
             </distribution>
 
 	    <prior id="MeanRatePrior.old" name="distribution" x="@ucldMean.old">
@@ -253,7 +253,7 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
             </prior>
         </distribution>
 
-		<distribution id="new.prior" monophyletic="true" spec="beast.math.distributions.MRCAPrior" tree="@Tree.t:fluA">
+		<distribution id="new.prior" monophyletic="true" spec="beast.base.evolution.tree.MRCAPrior" tree="@Tree.t:fluA">
 			<taxonset id="taxonset.new" spec="TaxonSet">
 				<taxon id="A_Akita_1_1994" spec="Taxon"/>
 				<taxon id="A_SouthAustralia_36_1992" spec="Taxon"/>
@@ -303,8 +303,8 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
 			</taxonset>
 		</distribution>
 			
-        <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
-            <distribution id="treeLikelihood.fluA" spec="ThreadedTreeLikelihood" data="@fluA" tree="@Tree.t:fluA"  branchRateModel="@branchRates">
+        <distribution id="likelihood" spec="beast.base.inference.CompoundDistribution" useThreads="true">
+            <distribution id="treeLikelihood.fluA" spec="beast.base.evolution.likelihood.ThreadedTreeLikelihood" data="@fluA" tree="@Tree.t:fluA"  branchRateModel="@branchRates">
                 <siteModel id="SiteModel.s:fluA" spec="SiteModel" gammaCategoryCount="4" shape="@gammaShape.s:fluA">
                     <parameter id="mutationRate.s:fluA" estimate="false" name="mutationRate">1.0</parameter>
                     <parameter id="proportionInvariant.s:fluA" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
@@ -320,7 +320,7 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
 
     <operator id="KappaScaler.s:fluA" spec="ScaleOperator" parameter="@kappa.s:fluA" scaleFactor="0.5" weight="0.1"/>
 
-    <operator id="randomClockUpDownOperator.c:fluA" spec="UpDownOperator" scaleFactor="0.75" weight="3.0">
+    <operator id="randomClockUpDownOperator.c:fluA" spec="beast.base.inference.operator.UpDownOperator" scaleFactor="0.75" weight="3.0">
 		<parameter idref="ucldMean.new" name="up"/>
 		<parameter idref="ucldMean.old" name="up"/>
  
@@ -332,22 +332,22 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
 
     <operator id="ucldStdevScaler.new" parameter="@ucldStdev.new" scaleFactor="0.5" spec="ScaleOperator" weight="3.0"/>
 
-    <operator id="CategoriesRandomWalk.new" parameter="@rateCategories.new" spec="IntRandomWalkOperator" weight="10.0" windowSize="1"/>
+    <operator id="CategoriesRandomWalk.new" parameter="@rateCategories.new" spec="beast.base.inference.operator.IntRandomWalkOperator" weight="10.0" windowSize="1"/>
 
-    <operator id="CategoriesSwapOperator.new" intparameter="@rateCategories.new" spec="SwapOperator" weight="10.0"/>
+    <operator id="CategoriesSwapOperator.new" intparameter="@rateCategories.new" spec="beast.base.inference.operator.SwapOperator" weight="10.0"/>
 
-    <operator id="CategoriesUniform.new" parameter="@rateCategories.new" spec="UniformOperator" weight="10.0"/>
+    <operator id="CategoriesUniform.new" parameter="@rateCategories.new" spec="beast.base.inference.operator.UniformOperator" weight="10.0"/>
     
     <!-- old rate -->
     <operator id="ucldMeanScaler.old" parameter="@ucldMean.old" scaleFactor="0.5" spec="ScaleOperator" weight="1.0"/>
 
     <operator id="ucldStdevScaler.old" parameter="@ucldStdev.old" scaleFactor="0.5" spec="ScaleOperator" weight="3.0"/>
 
-    <operator id="CategoriesRandomWalk.old" parameter="@rateCategories.old" spec="IntRandomWalkOperator" weight="10.0" windowSize="1"/>
+    <operator id="CategoriesRandomWalk.old" parameter="@rateCategories.old" spec="beast.base.inference.operator.IntRandomWalkOperator" weight="10.0" windowSize="1"/>
 
-    <operator id="CategoriesSwapOperator.old" intparameter="@rateCategories.old" spec="SwapOperator" weight="10.0"/>
+    <operator id="CategoriesSwapOperator.old" intparameter="@rateCategories.old" spec="beast.base.inference.operator.SwapOperator" weight="10.0"/>
 
-    <operator id="CategoriesUniform.old" parameter="@rateCategories.old" spec="UniformOperator" weight="10.0"/>
+    <operator id="CategoriesUniform.old" parameter="@rateCategories.old" spec="beast.base.inference.operator.UniformOperator" weight="10.0"/>
     
     
     
@@ -367,7 +367,7 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
 
     <operator id="PopSizeScaler.t:fluA" spec="ScaleOperator" parameter="@popSize.t:fluA" scaleFactor="0.75" weight="3.0"/>
 
-    <operator id="FrequenciesExchanger.s:fluA" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+    <operator id="FrequenciesExchanger.s:fluA" spec="beast.base.inference.operator.DeltaExchangeOperator" delta="0.01" weight="0.1">
         <parameter idref="freqParameter.s:fluA"/>
     </operator>
 
@@ -376,7 +376,7 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
         <log idref="likelihood"/>
         <log idref="prior"/>
         <log idref="treeLikelihood.fluA"/>
-        <log id="TreeHeight.t:fluA" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:fluA"/>
+        <log id="TreeHeight.t:fluA" spec="beast.base.evolution.tree.TreeStatLogger" tree="@Tree.t:fluA" logHeight="true"/>
         <log idref="gammaShape.s:fluA"/>
         <log idref="kappa.s:fluA"/>
         <parameter idref="ucldMean.old" name="log"/>
@@ -385,12 +385,12 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
         <log idref="popSize.t:fluA"/>
         <log idref="CoalescentConstant.t:fluA"/>
         <log idref="freqParameter.s:fluA"/>
-        <log id="rate.c:fluA" spec="mf.beast.evolution.branchratemodel.FLCRateStatistic" branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
+        <log id="rate.c:fluA" spec="beast.base.evolution.branchratemodel.FLCRateStatistic" branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
     </logger>
 
     <logger id="screenlog" logEvery="1000">
         <log idref="posterior"/>
-        <log id="ESS.0" spec="util.ESS" arg="@posterior"/>
+        <log id="ESS.0" spec="beast.base.inference.util.ESS" arg="@posterior"/>
         <log idref="likelihood"/>
         <log idref="prior"/>
         <parameter idref="ucldMean.old" name="log"/>
@@ -398,7 +398,7 @@ A_Tonga_23_1985=1985.0                <taxa id="TaxonSet.fluA" spec="TaxonSet">
     </logger>
 
     <logger id="treelog.t:fluA" fileName="$(tree).trees" logEvery="1000" mode="tree">
-        <log id="TreeWithMetaDataLogger.t:fluA" spec="beast.evolution.tree.TreeWithMetaDataLogger" branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
+        <log id="TreeWithMetaDataLogger.t:fluA" spec="beast.base.evolution.TreeWithMetaDataLogger" branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
     </logger>
 </run>
 
