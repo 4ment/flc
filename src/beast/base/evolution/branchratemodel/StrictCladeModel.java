@@ -1,7 +1,7 @@
-package mf.beast.evolution.branchratemodel;
+package beast.base.evolution.branchratemodel;
 
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Node;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.Node;
 
 public class StrictCladeModel extends CladeRateModel.Base {
 
@@ -9,7 +9,7 @@ public class StrictCladeModel extends CladeRateModel.Base {
 
     @Override
     public void initAndValidate() {
-        muParameter = meanRateInput.get();
+        muParameter = (RealParameter) meanRateInput.get();
         if (muParameter != null) {
             muParameter.setBounds(Math.max(0.0, muParameter.getLower()), muParameter.getUpper());
             mu = muParameter.getValue();

@@ -1,4 +1,4 @@
-package mf.beast.evolution.branchratemodel;
+package beast.base.evolution.branchratemodel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,10 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.tree.Node;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.tree.Node;
 
 @Description("Defines an uncorrelated relaxed molecular clock for multiple monophyletic clades.")
 public class UCRelaxedMultiCladeClockModel extends AbstractUCRelaxedClockModel implements CladeRateModel {

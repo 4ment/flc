@@ -1,7 +1,7 @@
-package mf.beast.evolution.branchratemodel;
+package beast.base.evolution.branchratemodel;
 
-import beast.core.Citation;
-import beast.core.Description;
+import beast.base.core.Citation;
+import beast.base.core.Description;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import beast.core.Input;
-import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
+import beast.base.core.Input;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
 
 // TreeLikelihood contains a reference to a abstract BranchRateModel.Base object as input, not a BranchModel interface
 @Description("Defines a flexible local clock model.")
@@ -37,7 +36,7 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
         cladeRateModels = cladeRateModelInputs.get();
         rootRateModel = rootRateModelInput.get();
 
-        nodeClockMap.put(tree.getRoot().getNr(), rootRateModel);
+        nodeClockMap.put(tree.getRoot().getNr(), (BranchRateModel) rootRateModel);
         postorderTraverse(tree.getRoot());
         preorderTraverse(tree.getRoot());
 

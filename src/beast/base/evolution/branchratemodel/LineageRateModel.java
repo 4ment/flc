@@ -1,14 +1,13 @@
-package mf.beast.evolution.branchratemodel;
+package beast.base.evolution.branchratemodel;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
-import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.tree.Node;
+import beast.base.inference.CalculationNode;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.Node;
 
 public interface LineageRateModel extends BranchRateModel {
 
