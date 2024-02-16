@@ -1,7 +1,7 @@
 package mf.beast.evolution.branchratemodel;
 
-import beast.base.core.Citation;
-import beast.base.core.Description;
+import beast.core.Citation;
+import beast.core.Description;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,18 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import beast.base.core.Input;
-import beast.base.evolution.branchratemodel.BranchRateModel;
-import beast.base.evolution.tree.Node;
-import beast.base.evolution.tree.Tree;
+import beast.core.Input;
+import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
 
-// TreeLikelihood contains a reference to an abstract BranchRateModel.Base object as input, not a BranchModel interface
+// TreeLikelihood contains a reference to a abstract BranchRateModel.Base object as input, not a BranchModel interface
 @Description("Defines a flexible local clock model.")
 @Citation(value = "Fourment M and Darling AE (2018) Local and relaxed clocks: the best of both worlds\n" +
                 "  PeerJ 6:e5140", DOI = "10.7717/peerj.5140", year = 2018, firstAuthorSurname = "fourment")
 public class FlexibleLocalClockModel extends BranchRateModel.Base {//CalculationNode implements BranchRateModel {
 
-    public Input<LineageRateModel> rootRateModelInput = new Input<LineageRateModel>("rootClockModel", "the branch rate model for branches that do not belong to a local clock.", Input.Validate.REQUIRED);
+    public Input<LineageRateModel> rootRateModelInput = new Input<LineageRateModel>("rootClockModel", "the branch rate model for branchs that do not belong to a local clock.", Input.Validate.REQUIRED);
     public Input<List<CladeRateModel>> cladeRateModelInputs = new Input<List<CladeRateModel>>("cladeClockModel", "List of clades containing a rate (strict or UC relaxed clock).", new ArrayList<CladeRateModel>());
     
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this local clock is associated with.", Input.Validate.REQUIRED);
@@ -101,7 +101,7 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
 	                        if (rateModel.includeStem(i)) {
 	                            nodeClockMap.put(node.getNr(), rateModel);
 	                        }
-	                        // node will inherit its clock AND its children get the same new clock
+	                        // node will inherits its clock AND its children get the same new clock
 	                        else {
 	                            for (int j = 0; j < node.getChildCount(); j++) {
 	                                nodeClockMap.put(node.getChild(j).getNr(), rateModel);
@@ -145,7 +145,7 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
         return cladeRateModels;
     }
 
-    public LineageRateModel getRootRateModel(){
+    public LineageRateModel getrootRateModel(){
         return rootRateModel;
     }
 }

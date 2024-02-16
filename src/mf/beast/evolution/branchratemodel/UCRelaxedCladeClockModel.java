@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import beast.base.core.Input;
-import beast.base.core.Input.Validate;
-import beast.base.evolution.alignment.TaxonSet;
-import beast.base.evolution.tree.Node;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.evolution.alignment.TaxonSet;
+import beast.evolution.tree.Node;
 
 
 public class UCRelaxedCladeClockModel extends AbstractUCRelaxedClockModel implements CladeRateModel {

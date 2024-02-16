@@ -1,14 +1,16 @@
 package mf.beast.evolution.branchratemodel;
 
-import beast.base.core.*;
-import beast.base.inference.parameter.IntegerParameter;
-import beast.base.inference.parameter.RealParameter;
-import beast.base.evolution.tree.Node;
-import beast.base.evolution.tree.Tree;
-import beast.base.evolution.branchratemodel.BranchRateModel;
-import beast.base.inference.distribution.ParametricDistribution;
-import beast.base.inference.util.InputUtil;
-import beast.base.util.Randomizer;
+import beast.core.Citation;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
+import beast.evolution.branchratemodel.BranchRateModel;
+import beast.math.distributions.ParametricDistribution;
+import beast.util.Randomizer;
 import org.apache.commons.math.MathException;
 
 import java.util.Arrays;
@@ -35,7 +37,7 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
     public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
 //    public Input<Boolean> initialiseInput = new Input<Boolean>("initialise", "Whether to initialise rates by a heuristic instead of random (default false).", false);
 
-    private Function meanRate;
+    RealParameter meanRate;
 //    boolean initialise;
 
     int LATTICE_SIZE_FOR_DISCRETIZED_RATES = 100;
@@ -147,7 +149,7 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
             renormalize = false;
         }
 
-        return getRawRate(node) * scaleFactor * meanRate.getArrayValue();
+        return getRawRate(node) * scaleFactor * meanRate.getValue();
     }
 
     /**
@@ -368,7 +370,7 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
             return true;
         }
 
-        if (InputUtil.isDirty(meanRateInput)) {
+        if (meanRate.somethingIsDirty()) {
             return true;
         }
 

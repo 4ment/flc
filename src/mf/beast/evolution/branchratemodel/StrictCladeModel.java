@@ -1,21 +1,18 @@
 package mf.beast.evolution.branchratemodel;
 
-import beast.base.core.Function;
-import beast.base.inference.parameter.RealParameter;
-import beast.base.evolution.tree.Node;
+import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
 
 public class StrictCladeModel extends CladeRateModel.Base {
 
-    Function muParameter;
+    RealParameter muParameter;
 
     @Override
     public void initAndValidate() {
         muParameter = meanRateInput.get();
         if (muParameter != null) {
-//            muParameter.setBounds(Math.max(0.0, muParameter.getLower()), muParameter.getUpper());
-            mu = muParameter.getArrayValue();
-            if (mu <= 0)
-                throw new IllegalArgumentException("mu parameter must be > 0 !");
+            muParameter.setBounds(Math.max(0.0, muParameter.getLower()), muParameter.getUpper());
+            mu = muParameter.getValue();
         }
     }
 
@@ -26,19 +23,19 @@ public class StrictCladeModel extends CladeRateModel.Base {
 
     @Override
     public boolean requiresRecalculation() {
-        mu = muParameter.getArrayValue();
+        mu = muParameter.getValue();
         return true;
     }
 
     @Override
     protected void restore() {
-        mu = muParameter.getArrayValue();
+        mu = muParameter.getValue();
         super.restore();
     }
 
     @Override
     protected void store() {
-        mu = muParameter.getArrayValue();
+        mu = muParameter.getValue();
         super.store();
     }
 
