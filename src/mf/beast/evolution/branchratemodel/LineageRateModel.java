@@ -14,7 +14,11 @@ public interface LineageRateModel extends BranchRateModel {
 
     public void initializeNodeAssignment(Set<Node> nodes);
 
+    public void updateNodeIndex(Set<Node> nodes);
+
     public Set<Node> getNodes();
+
+    int[] getMap();
 
     @Description(value = "Base implementation of a clock model.", isInheritable = false)
     public abstract class Base extends CalculationNode implements LineageRateModel {
