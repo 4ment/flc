@@ -384,6 +384,12 @@
         <operator id="clockRate.new.scaler" spec="ScaleOperator" parameter="@clockRate.new" scaleFactor="0.5"
                   weight="0.1"/>
 
+        <operator id="randomClockUpDownOperator.c:fluA" spec="UpDownOperator" scaleFactor="0.75" weight="3.0">
+            <parameter idref="clockRate.new" name="up"/>
+            <parameter idref="clockRate.old" name="up"/>
+            <down idref="Tree.t:fluA"/>
+        </operator>   
+
         <operator id="gammaShapeScaler.s:fluA" spec="ScaleOperator" parameter="@gammaShape.s:fluA" scaleFactor="0.5"
                   weight="0.1"/>
 
