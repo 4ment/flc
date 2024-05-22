@@ -20,28 +20,29 @@ public class FLCRateStatistic extends RateStatistic {
     private List<List<Double>> rates;
     private List<List<Double>> branchLengths;
 
-    private Map<BranchRateModel,Integer> map = new HashMap<BranchRateModel,Integer>();
+    private Map<BranchRateModel, Integer> map = new HashMap<BranchRateModel, Integer>();
 
     @Override
     public void initAndValidate() {
         super.initAndValidate();
-        branchModel = (FlexibleLocalClockModel)branchRateModelInput.get();
+        branchModel = (FlexibleLocalClockModel) branchRateModelInput.get();
         int clockCount = branchModel.getNumberOfClocks();
         rates = new ArrayList<List<Double>>(clockCount);
         branchLengths = new ArrayList<List<Double>>(clockCount);
-        for(int i = 0; i < clockCount; i++){
+        for (int i = 0; i < clockCount; i++) {
             rates.add(new ArrayList<>());
             branchLengths.add(new ArrayList<>());
         }
 
         int index = 0;
-        for(BranchRateModel brm : branchModel.getClockMap().values()){
-            if(!map.containsKey(brm)){
+        for (BranchRateModel brm : branchModel.getClockMap().values()) {
+            if (!map.containsKey(brm)) {
                 map.put(brm, index);
                 index++;
             }
         }
     }
+
     /**
      * Loggable implementation *
      */
@@ -49,8 +50,8 @@ public class FLCRateStatistic extends RateStatistic {
     @Override
     public void init(final PrintStream out) {
         super.init(out);
-        for(BranchRateModel brm : map.keySet()){
-            BranchRateModel.Base brm2 = (BranchRateModel.Base)brm;
+        for (BranchRateModel brm : map.keySet()) {
+            BranchRateModel.Base brm2 = (BranchRateModel.Base) brm;
             String id = brm2.getID();
             if (id == null) {
                 id = "";
@@ -59,17 +60,16 @@ public class FLCRateStatistic extends RateStatistic {
         }
     }
 
-
     @Override
     public void log(final long sample, final PrintStream out) {
         super.log(sample, out);
 
-        for (int i = 0; i < rates.size(); i++){
+        for (int i = 0; i < rates.size(); i++) {
             rates.get(i).clear();
             branchLengths.get(i).clear();
         }
         final Node[] nodes = treeInput.get().getNodesAsArray();
-        for (Node node : nodes ) {
+        for (Node node : nodes) {
             if (!node.isRoot()) {
                 final Node parent = node.getParent();
                 BranchRateModel brm = branchModel.getClockMap().get(node.getNr());
@@ -78,13 +78,13 @@ public class FLCRateStatistic extends RateStatistic {
             }
         }
 
-        for(BranchRateModel brm : map.keySet()) {
+        for (BranchRateModel brm : map.keySet()) {
             double totalWeightedRate = 0.0;
             double totalTreeLength = 0.0;
             int index = map.get(brm);
             final double[] ratesArray = new double[rates.get(index).size()];
             for (int i = 0; i < ratesArray.length; i++) {
-                final double bl =  branchLengths.get(index).get(i);
+                final double bl = branchLengths.get(index).get(i);
                 ratesArray[i] = rates.get(index).get(i);
                 totalWeightedRate += ratesArray[i] * bl;
                 totalTreeLength += bl;

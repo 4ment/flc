@@ -1,7 +1,6 @@
 package mf.beast.evolution.branchratemodel;
 
 import beast.base.core.Function;
-import beast.base.inference.parameter.RealParameter;
 import beast.base.evolution.tree.Node;
 
 public class StrictCladeModel extends CladeRateModel.Base {
@@ -12,7 +11,6 @@ public class StrictCladeModel extends CladeRateModel.Base {
     public void initAndValidate() {
         muParameter = meanRateInput.get();
         if (muParameter != null) {
-//            muParameter.setBounds(Math.max(0.0, muParameter.getLower()), muParameter.getUpper());
             mu = muParameter.getArrayValue();
             if (mu <= 0)
                 throw new IllegalArgumentException("mu parameter must be > 0 !");

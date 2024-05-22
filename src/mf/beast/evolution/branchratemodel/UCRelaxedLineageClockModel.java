@@ -5,11 +5,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-
-import beast.base.inference.parameter.IntegerParameter;
-import beast.base.inference.parameter.RealParameter;
 import beast.base.core.Log;
 import beast.base.evolution.tree.Node;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
 import beast.base.util.Randomizer;
 
 // Lets hope that the SwapOperator on rateCategories is constructed AFTER initializeNodeAssignment() is called
@@ -21,22 +20,22 @@ public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel impl
 
     @Override
     public void initAndValidate() {
-    	assignedBranchCount = treeInput.get().getNodeCount()-1;
+        assignedBranchCount = treeInput.get().getNodeCount() - 1;
         map = new int[treeInput.get().getNodeCount()];
         super.initAndValidate();
     }
 
-	////////////////////////////////////////////////////////////
-	// Implement LineageRateModel interface
-	////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
+    // Implement LineageRateModel interface
+    ////////////////////////////////////////////////////////////
     @Override
     public void initializeNodeAssignment(Set<Node> nodes) {
-        
-        if (tree.getNodeCount()-1 != nodes.size()) {
-        	assignedBranchCount = nodes.size();// does not contain the root
-        	this.nodes.clear();
-        	this.nodes.addAll(nodes);
-            
+
+        if (tree.getNodeCount() - 1 != nodes.size()) {
+            assignedBranchCount = nodes.size();// does not contain the root
+            this.nodes.clear();
+            this.nodes.addAll(nodes);
+
             if (!usingQuantiles) {
                 LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
                 if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) {
@@ -48,7 +47,8 @@ public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel impl
                 if (numberOfDiscreteRates.get() != -1) {
                     throw new RuntimeException("Can't specify both numberOfDiscreteRates and rateQuantiles inputs.");
                 }
-                Log.info.println("  UCRelaxedLineageClockModel: using quantiles for rate distribution across branches.");
+                Log.info.println(
+                        "  UCRelaxedLineageClockModel: using quantiles for rate distribution across branches.");
             }
 
             if (usingQuantiles) {
@@ -78,11 +78,9 @@ public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel impl
                 // rates are initially zero and are computed by getRawRate(int i) as needed
                 rates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
                 storedRates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
-
-                //System.arraycopy(rates, 0, storedRates, 0, rates.length);
             }
         }
-        
+
         Arrays.fill(map, -1);
         int index = 0;
         for (Node node : nodes) {
@@ -90,21 +88,21 @@ public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel impl
             index++;
         }
     }
-    
+
     @Override
-	public Set<Node> getNodes() {
-		return Collections.unmodifiableSet(nodes);
-	}
-    
-	////////////////////////////////////////////////////////////
-	// Implement abstract methods of AbstractUCRelaxedClockModel
-	////////////////////////////////////////////////////////////
-	
-	protected int getCategoryIndex(int nodeNumber){
-		return map[nodeNumber];
-	}
-	
-	protected int getAssignedBranchCount(){
-		return assignedBranchCount;
-	}
+    public Set<Node> getNodes() {
+        return Collections.unmodifiableSet(nodes);
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Implement abstract methods of AbstractUCRelaxedClockModel
+    ////////////////////////////////////////////////////////////
+
+    protected int getCategoryIndex(int nodeNumber) {
+        return map[nodeNumber];
+    }
+
+    protected int getAssignedBranchCount() {
+        return assignedBranchCount;
+    }
 }

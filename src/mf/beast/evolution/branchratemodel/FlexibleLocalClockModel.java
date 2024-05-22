@@ -1,7 +1,5 @@
 package mf.beast.evolution.branchratemodel;
 
-import beast.base.core.Citation;
-import beast.base.core.Description;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,21 +7,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import beast.base.core.Citation;
+import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.evolution.branchratemodel.BranchRateModel;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 
-// TreeLikelihood contains a reference to an abstract BranchRateModel.Base object as input, not a BranchModel interface
 @Description("Defines a flexible local clock model.")
-@Citation(value = "Fourment M and Darling AE (2018) Local and relaxed clocks: the best of both worlds\n" +
-                "  PeerJ 6:e5140", DOI = "10.7717/peerj.5140", year = 2018, firstAuthorSurname = "fourment")
-public class FlexibleLocalClockModel extends BranchRateModel.Base {//CalculationNode implements BranchRateModel {
+@Citation(value = "Fourment M and Darling AE (2018) Local and relaxed clocks: the best of both worlds\n"
+        + "  PeerJ 6:e5140", DOI = "10.7717/peerj.5140", year = 2018, firstAuthorSurname = "fourment")
+public class FlexibleLocalClockModel extends BranchRateModel.Base {
 
-    public Input<LineageRateModel> rootRateModelInput = new Input<LineageRateModel>("rootClockModel", "the branch rate model for branches that do not belong to a local clock.", Input.Validate.REQUIRED);
-    public Input<List<CladeRateModel>> cladeRateModelInputs = new Input<List<CladeRateModel>>("cladeClockModel", "List of clades containing a rate (strict or UC relaxed clock).", new ArrayList<CladeRateModel>());
-    
-    public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this local clock is associated with.", Input.Validate.REQUIRED);
+    public Input<LineageRateModel> rootRateModelInput = new Input<LineageRateModel>("rootClockModel",
+            "the branch rate model for branches that do not belong to a local clock.", Input.Validate.REQUIRED);
+    public Input<List<CladeRateModel>> cladeRateModelInputs = new Input<List<CladeRateModel>>("cladeClockModel",
+            "List of clades containing a rate (strict or UC relaxed clock).", new ArrayList<CladeRateModel>());
+
+    public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this local clock is associated with.",
+            Input.Validate.REQUIRED);
 
     private LineageRateModel rootRateModel;
     private List<CladeRateModel> cladeRateModels;
@@ -71,21 +73,21 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
             descendants.add(node.getID());
 
             // Check if a cladeRateModel is assigned to this leaf only
-            // includeStem is not checked since it is assumed to be true (otherwise the cladeRateModel is useless)
+            // includeStem is not checked since it is assumed to be true (otherwise the
+            // cladeRateModel is useless)
             for (CladeRateModel rateModel : cladeRateModels) {
-            	int i = 0;
-            	for( ; i < rateModel.getTaxonSetCount(); i++){
-	                if (rateModel.getTaxonSet(i).getTaxaNames().equals(descendants)) {
-	                    nodeClockMap.put(node.getNr(), rateModel);
-	                    break;
-	                }
-            	}
-            	if(i != rateModel.getTaxonSetCount()){
-            		break;
-            	}
+                int i = 0;
+                for (; i < rateModel.getTaxonSetCount(); i++) {
+                    if (rateModel.getTaxonSet(i).getTaxaNames().equals(descendants)) {
+                        nodeClockMap.put(node.getNr(), rateModel);
+                        break;
+                    }
+                }
+                if (i != rateModel.getTaxonSetCount()) {
+                    break;
+                }
             }
-        }
-        else {
+        } else {
 
             for (int i = 0; i < node.getChildCount(); i++) {
                 Set<String> childSet = postorderTraverse(node.getChild(i));
@@ -94,25 +96,25 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
 
             if (!node.isRoot()) {
                 for (CladeRateModel rateModel : cladeRateModels) {
-                	int i = 0;
-                	for( ; i < rateModel.getTaxonSetCount(); i++){
-	                    if (rateModel.getTaxonSet(i).getTaxaNames().equals(descendants)) {
-	                        // Here starts a new clock
-	                        if (rateModel.includeStem(i)) {
-	                            nodeClockMap.put(node.getNr(), rateModel);
-	                        }
-	                        // node will inherit its clock AND its children get the same new clock
-	                        else {
-	                            for (int j = 0; j < node.getChildCount(); j++) {
-	                                nodeClockMap.put(node.getChild(j).getNr(), rateModel);
-	                            }
-	                        }
-	                        break;
-	                    }
-                	}
-                	if(i != rateModel.getTaxonSetCount()){
-                		break;
-                	}
+                    int i = 0;
+                    for (; i < rateModel.getTaxonSetCount(); i++) {
+                        if (rateModel.getTaxonSet(i).getTaxaNames().equals(descendants)) {
+                            // Here starts a new clock
+                            if (rateModel.includeStem(i)) {
+                                nodeClockMap.put(node.getNr(), rateModel);
+                            }
+                            // node will inherit its clock AND its children get the same new clock
+                            else {
+                                for (int j = 0; j < node.getChildCount(); j++) {
+                                    nodeClockMap.put(node.getChild(j).getNr(), rateModel);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    if (i != rateModel.getTaxonSetCount()) {
+                        break;
+                    }
                 }
             }
         }
@@ -132,20 +134,20 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {//Calculation
         }
     }
 
-    public Map<Integer, BranchRateModel> getClockMap(){
+    public Map<Integer, BranchRateModel> getClockMap() {
         return nodeClockMap;
     }
 
     // Number of local clock + ancestral clock
-    public int getNumberOfClocks(){
-        return cladeRateModels.size()+1;
+    public int getNumberOfClocks() {
+        return cladeRateModels.size() + 1;
     }
 
-    public List<CladeRateModel> getCladeRateModels(){
+    public List<CladeRateModel> getCladeRateModels() {
         return cladeRateModels;
     }
 
-    public LineageRateModel getRootRateModel(){
+    public LineageRateModel getRootRateModel() {
         return rootRateModel;
     }
 }

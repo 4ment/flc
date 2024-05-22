@@ -1,8 +1,13 @@
 .DS_Store
+bin
 
+# IntelliJ
 /.idea
 /*.iml
 /META-INF
+
+# vscode
+.vscode/
 
 # Build directories:
 /build

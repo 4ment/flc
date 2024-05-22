@@ -1,42 +1,49 @@
 package mf.beast.evolution.branchratemodel;
 
+import java.util.Arrays;
+
 import beast.base.core.*;
-import beast.base.inference.parameter.IntegerParameter;
-import beast.base.inference.parameter.RealParameter;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.evolution.branchratemodel.BranchRateModel;
 import beast.base.inference.distribution.ParametricDistribution;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.util.InputUtil;
 import beast.base.util.Randomizer;
-import org.apache.commons.math.MathException;
 
-import java.util.Arrays;
+import org.apache.commons.math.MathException;
 
 /**
  * @author Alexei Drummond
  */
 
 @Description("Defines an uncorrelated relaxed molecular clock.")
-@Citation(value =
-        "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and\n" +
-        "  Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088",
-        year = 2006, firstAuthorSurname = "drummond")
+@Citation(value = "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and\n"
+        + "  Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088", year = 2006, firstAuthorSurname = "drummond")
 public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
 
-    public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.REQUIRED);
-    public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
+    public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr",
+            "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.",
+            Input.Validate.REQUIRED);
+    public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories",
+            "the rate categories associated with nodes in the tree for sampling of individual rates among branches.",
+            Input.Validate.REQUIRED);
 
-    public Input<Integer> numberOfDiscreteRates = new Input<Integer>("numberOfDiscreteRates", "the number of discrete rate categories to approximate the rate distribution by. A value <= 0 will cause the number of categories to be set equal to the number of branches in the tree. (default = -1)", -1);
+    public Input<Integer> numberOfDiscreteRates = new Input<Integer>("numberOfDiscreteRates",
+            "the number of discrete rate categories to approximate the rate distribution by. A value <= 0 will cause the number of categories to be set equal to the number of branches in the tree. (default = -1)",
+            -1);
 
-    public Input<RealParameter> quantileInput = new Input<RealParameter>("rateQuantiles", "the rate quantiles associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.XOR, categoryInput);
+    public Input<RealParameter> quantileInput = new Input<RealParameter>("rateQuantiles",
+            "the rate quantiles associated with nodes in the tree for sampling of individual rates among branches.",
+            Input.Validate.XOR, categoryInput);
 
-    public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
-    public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
-//    public Input<Boolean> initialiseInput = new Input<Boolean>("initialise", "Whether to initialise rates by a heuristic instead of random (default false).", false);
+    public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.",
+            Input.Validate.REQUIRED);
+    public Input<Boolean> normalizeInput = new Input<Boolean>("normalize",
+            "Whether to normalize the average rate (default false).", false);
 
     private Function meanRate;
-//    boolean initialise;
 
     int LATTICE_SIZE_FOR_DISCRETIZED_RATES = 100;
 
@@ -44,9 +51,9 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
     boolean usingQuantiles;
 
     private int branchCount;
-    
-    //MF
+
     protected abstract int getCategoryIndex(int nodeNumber);
+
     protected abstract int getAssignedBranchCount();
 
     @Override
@@ -57,20 +64,22 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
 
         categories = categoryInput.get();
         usingQuantiles = (categories == null);
-        
-        //MF
+
         int assignedBranchCount = getAssignedBranchCount();
 
         if (!usingQuantiles) {
             LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
-            if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) LATTICE_SIZE_FOR_DISCRETIZED_RATES = assignedBranchCount;
-            Log.info.println("  AbstractUCRelaxedClockModel: " + this.ID +" using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate " +
-                    "categories to approximate rate distribution across branches.");
+            if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0)
+                LATTICE_SIZE_FOR_DISCRETIZED_RATES = assignedBranchCount;
+            Log.info.println(
+                    "  AbstractUCRelaxedClockModel: " + this.ID + " using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES
+                            + " rate " + "categories to approximate rate distribution across branches.");
         } else {
             if (numberOfDiscreteRates.get() != -1) {
                 throw new RuntimeException("Can't specify both numberOfDiscreteRates and rateQuantiles inputs.");
             }
-            Log.info.println("  AbstractUCRelaxedClockModel " + this.ID +" using quantiles for rate distribution across branches.");
+            Log.info.println("  AbstractUCRelaxedClockModel " + this.ID
+                    + " using quantiles for rate distribution across branches.");
         }
 
         if (usingQuantiles) {
@@ -103,8 +112,6 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
             // rates are initially zero and are computed by getRawRate(int i) as needed
             rates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
             storedRates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
-
-            //System.arraycopy(rates, 0, storedRates, 0, rates.length);
         }
         normalize = normalizeInput.get();
 
@@ -129,20 +136,20 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
             return 1;
         }
 
-   		if (recompute) {
-   	        // this must be synchronized to avoid being called simultaneously by
-   	        // two different likelihood threads
-   	    	synchronized (this) {
-    			prepare();
-    			recompute = false;
-    		}
-    	}
+        if (recompute) {
+            // this must be synchronized to avoid being called simultaneously by
+            // two different likelihood threads
+            synchronized (this) {
+                prepare();
+                recompute = false;
+            }
+        }
 
         if (renormalize) {
             if (normalize) {
-            	synchronized (this) {
-            		computeFactor();
-            	}
+                synchronized (this) {
+                    computeFactor();
+                }
             }
             renormalize = false;
         }
@@ -155,7 +162,7 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
      */
     private void computeFactor() {
 
-        //scale mean rate to 1.0 or separate parameter
+        // scale mean rate to 1.0 or separate parameter
 
         double treeRate = 0.0;
         double treeTime = 0.0;
@@ -239,128 +246,24 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
 
         if (!usingQuantiles) {
             // rates array initialized to correct length in initAndValidate
-            // here we just reset rates to zero and they are computed by getRawRate(int i) as needed
+            // here we just reset rates to zero and they are computed by getRawRate(int i)
+            // as needed
             Arrays.fill(rates, 0.0);
         }
     }
 
-    /**
-     * initialise rate categories by matching rates to tree using JC69 *
-     */
-//    private void initialise() {
-//    	try {
-//			for (BEASTObject output : outputs) {
-//				if (output.getInput("data") != null && output.getInput("tree") != null) {
-//					
-//					// set up treelikelihood with Jukes Cantor no gamma, no inv, strict clock
-//					Alignment data = (Alignment) output.getInput("data").get();
-//					Tree tree = (Tree) output.getInput("tree").get();
-//					TreeLikelihoodD likelihood = new TreeLikelihoodD();
-//					SiteModel siteModel = new SiteModel();
-//					JukesCantor substitutionModel = new JukesCantor();
-//					substitutionModel.initAndValidate();
-//					siteModel.initByName("substModel", substitutionModel);
-//					likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
-//					likelihood.calculateLogP();
-//					
-//					// calculate distances
-//					Node [] nodes = tree.getNodesAsArray();
-//					double [] distance = new double[nodes.length];
-//					for (int i = 0; i < distance.length - 1; i++) {
-//						double len = nodes[i].getLength();
-//						double dist = likelihood.calcDistance(nodes[i]);
-//						distance[i] = len / dist;
-//					}
-//					
-//					// match category to distance
-//					double min = distance[0], max = min;
-//					for (int i = 1; i < distance.length - 1; i++) {
-//						if (!Double.isNaN(distance[i]) && !Double.isInfinite(distance[i])) {
-//							min = Math.min(min, distance[i]);
-//							max = Math.max(max, distance[i]);
-//						}
-//					}
-//					IntegerParameter categoriesParameter = categoryInput.get();
-//					Integer[] categories = new Integer[categoriesParameter.getDimension()];
-//					for (int i = 0; i < distance.length - 1; i++) {
-//						if (!Double.isNaN(distance[i]) && !Double.isInfinite(distance[i])) {
-//							categories[i] = (int)((distance.length - 2) * (distance[i]-min)/(max-min));
-//						} else {
-//							categories[i] = distance.length / 2;
-//						}
-//					}
-//					IntegerParameter other = new IntegerParameter(categories);
-//					other.setBounds(categoriesParameter.getLower(), categoriesParameter.getUpper());
-//					categoriesParameter.assignFromWithoutID(other);
-//				}
-//			}
-//    	} catch (Exception e) {
-//			// ignore
-//    		System.err.println("WARNING: UCRelaxedClock heuristic initialisation failed");
-//		}
-//	}
-//
-//    @Description("Treelikelihood used to guesstimate rates on branches by using the JC69 model on the data")
-//    class TreeLikelihoodD extends TreeLikelihood {
-//    
-//    	double calcDistance(Node node) {
-//    		int iNode = node.getNr();
-//    		int patterncount = dataInput.get().getPatternCount();
-//    		int statecount = dataInput.get().getDataType().getStateCount();
-//            double [] fParentPartials = new double[patterncount * statecount];
-//    		likelihoodCore.getNodePartials(node.getParent().getNr(), fParentPartials);
-//    		if (node.isLeaf()) {
-//        		// distance of leaf to its parent, ignores ambiguities
-//    			int [] nStates = new int[patterncount ];
-//        		likelihoodCore.getNodeStates(iNode, nStates);
-//        		double distance = 0;
-//        		for (int i = 0; i < patterncount; i++) {
-//        			int k = nStates[i];
-//        			double d = 0;
-//        			for (int j = 0; j < statecount; j++) {
-//        				if (j == k) {
-//        					d += 1.0 - fParentPartials[i * statecount + j];
-//        				} else {
-//        					d += fParentPartials[i * statecount + j];
-//        				}
-//        			}
-//        			distance += d * dataInput.get().getPatternWeight(i);
-//        		}
-//    			return distance;
-//    		} else {
-//        		// L1 distance of internal node partials to its parent partials
-//                double [] fPartials = new double[fParentPartials.length];
-//        		likelihoodCore.getNodePartials(iNode, fPartials);
-//        		double distance = 0;
-//        		for (int i = 0; i < patterncount; i++) {
-//        			double d = 0;
-//        			for (int j = 0; j < statecount; j++) {
-//       					d += Math.abs(fPartials[i * statecount + j] - fParentPartials[i * statecount + j]);
-//        			}
-//        			distance += d * dataInput.get().getPatternWeight(i);
-//        		}
-//    			return distance;
-//    		}
-//    	}
-//    	
-//    }
     @Override
     protected boolean requiresRecalculation() {
         recompute = false;
         renormalize = true;
 
-//        if (treeInput.get().somethingIsDirty()) {
-//        	recompute = true;
-//            return true;
-//        }
-        // rateDistInput cannot be dirty?!?
         if (rateDistInput.get().isDirtyCalculation()) {
             recompute = true;
             return true;
         }
         // NOT processed as trait on the tree, so DO mark as dirty
         if (categoryInput.get() != null && categoryInput.get().somethingIsDirty()) {
-            //recompute = true;
+            // recompute = true;
             return true;
         }
 
@@ -377,7 +280,8 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     public void store() {
-        if (!usingQuantiles) System.arraycopy(rates, 0, storedRates, 0, rates.length);
+        if (!usingQuantiles)
+            System.arraycopy(rates, 0, storedRates, 0, rates.length);
 
         storedScaleFactor = scaleFactor;
         super.store();
