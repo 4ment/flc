@@ -33,6 +33,63 @@ public class FlexibleLocalClockModel extends BranchRateModel.Base {
 
     private Map<Integer, BranchRateModel> nodeClockMap = new HashMap<Integer, BranchRateModel>();
 
+    private Map<Integer, BranchRateModel> nodeClockMapStored = new HashMap<Integer, BranchRateModel>();
+
+    @Override
+    protected boolean requiresRecalculation() {
+        if (isStrictClockLineage(rootRateModel) && isStrictClockClade(cladeRateModels)) {
+            // update node indices for strict clock models only
+            updateNodeIndex();
+        }
+        return true;
+    }
+
+    @Override
+    protected void store() {
+        // store nodeClockMap
+        nodeClockMapStored = nodeClockMap;
+        super.store();
+    }
+
+    @Override
+    protected void restore() {
+        // restore nodeClockMap
+        nodeClockMap = nodeClockMapStored;
+        super.restore();
+    }
+
+    public void updateNodeIndex() {
+        cladeRateModels = cladeRateModelInputs.get();
+        rootRateModel = rootRateModelInput.get();
+
+        nodeClockMap = new HashMap<Integer, BranchRateModel>();
+        nodeClockMap.put(tree.getRoot().getNr(), rootRateModel);
+        postorderTraverse(tree.getRoot());
+        preorderTraverse(tree.getRoot());
+        // node assignments
+        Set<Node> nodes = new HashSet<Node>();
+        for (Integer nodeNr : nodeClockMap.keySet()) {
+            if (nodeClockMap.get(nodeNr).equals(rootRateModel) && nodeNr != tree.getRoot().getNr()) {
+                Node node = tree.getNode(nodeNr);
+                nodes.add(node);
+            }
+        }
+        rootRateModel.initializeNodeAssignment(nodes);
+    }
+
+    private boolean isStrictClockLineage(LineageRateModel model) {
+        return model instanceof StrictLineageClockModel;
+    }
+
+    private boolean isStrictClockClade(List<CladeRateModel> cladeList) {
+        for (CladeRateModel model : cladeList) {
+            if (!(model instanceof StrictCladeModel)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public void initAndValidate() {
         tree = treeInput.get();
