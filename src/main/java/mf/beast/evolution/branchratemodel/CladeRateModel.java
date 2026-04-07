@@ -13,7 +13,7 @@ public interface CladeRateModel extends BranchRateModel {
 
     public boolean includeStem(int index);
 
-    public abstract class Base extends BranchRateModel.Base implements CladeRateModel {
+    public abstract class Base extends beast.base.spec.evolution.branchratemodel.Base implements CladeRateModel {
 
         public Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "list of taxa", Validate.REQUIRED);
         public Input<Boolean> includeStemInput = new Input<Boolean>("includeStem", "include stem", false);

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import beast.base.evolution.branchratemodel.StrictClockModel;
+import beast.base.spec.evolution.branchratemodel.StrictClockModel;
 import beast.base.evolution.tree.Node;
 
 public class StrictLineageClockModel extends StrictClockModel implements LineageRateModel {

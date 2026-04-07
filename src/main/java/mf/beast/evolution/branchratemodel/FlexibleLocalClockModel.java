@@ -13,11 +13,12 @@ import beast.base.core.Input;
 import beast.base.evolution.branchratemodel.BranchRateModel;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
+import beast.base.spec.evolution.branchratemodel.Base;
 
 @Description("Defines a flexible local clock model.")
 @Citation(value = "Fourment M and Darling AE (2018) Local and relaxed clocks: the best of both worlds\n"
         + "  PeerJ 6:e5140", DOI = "10.7717/peerj.5140", year = 2018, firstAuthorSurname = "fourment")
-public class FlexibleLocalClockModel extends BranchRateModel.Base {
+public class FlexibleLocalClockModel extends Base {
 
     public Input<LineageRateModel> rootRateModelInput = new Input<LineageRateModel>("rootClockModel",
             "the branch rate model for branches that do not belong to a local clock.", Input.Validate.REQUIRED);

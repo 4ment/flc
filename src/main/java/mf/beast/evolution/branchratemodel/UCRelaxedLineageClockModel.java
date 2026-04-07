@@ -7,8 +7,10 @@ import java.util.Set;
 
 import beast.base.core.Log;
 import beast.base.evolution.tree.Node;
-import beast.base.inference.parameter.IntegerParameter;
-import beast.base.inference.parameter.RealParameter;
+import beast.base.spec.domain.NonNegativeInt;
+import beast.base.spec.domain.UnitInterval;
+import beast.base.spec.inference.parameter.IntVectorParam;
+import beast.base.spec.inference.parameter.RealVectorParam;
 import beast.base.util.Randomizer;
 
 // Lets hope that the SwapOperator on rateCategories is constructed AFTER initializeNodeAssignment() is called
@@ -52,26 +54,27 @@ public class UCRelaxedLineageClockModel extends AbstractUCRelaxedClockModel impl
             }
 
             if (usingQuantiles) {
-                quantiles.setDimension(assignedBranchCount);
-                Double[] initialQuantiles = new Double[assignedBranchCount];
-                for (int i = 0; i < assignedBranchCount; i++) {
-                    initialQuantiles[i] = Randomizer.nextDouble();
+                if (quantiles instanceof RealVectorParam<UnitInterval> quantilesParam) {
+                    quantilesParam.setDimension(assignedBranchCount);
+                    double[] initialQuantiles = new double[assignedBranchCount];
+                    for (int i = 0; i < assignedBranchCount; i++) {
+                        initialQuantiles[i] = Randomizer.nextDouble();
+                    }
+                    RealVectorParam<UnitInterval> other = new RealVectorParam<>(initialQuantiles, UnitInterval.INSTANCE);
+                    quantilesParam.assignFromWithoutID(other);
                 }
-                RealParameter other = new RealParameter(initialQuantiles);
-                quantiles.assignFromWithoutID(other);
-                quantiles.setLower(0.0);
-                quantiles.setUpper(1.0);
             } else {
-                categories.setDimension(assignedBranchCount);
-                Integer[] initialCategories = new Integer[assignedBranchCount];
-                for (int i = 0; i < assignedBranchCount; i++) {
-                    initialCategories[i] = Randomizer.nextInt(LATTICE_SIZE_FOR_DISCRETIZED_RATES);
+                if (categories instanceof IntVectorParam<NonNegativeInt> categoriesParam) {
+                    categoriesParam.setDimension(assignedBranchCount);
+                    int[] initialCategories = new int[assignedBranchCount];
+                    for (int i = 0; i < assignedBranchCount; i++) {
+                        initialCategories[i] = Randomizer.nextInt(LATTICE_SIZE_FOR_DISCRETIZED_RATES);
+                    }
+                    IntVectorParam<NonNegativeInt> other = new IntVectorParam<>(initialCategories, NonNegativeInt.INSTANCE);
+                    categoriesParam.assignFromWithoutID(other);
+                    categoriesParam.setLower(0);
+                    categoriesParam.setUpper(LATTICE_SIZE_FOR_DISCRETIZED_RATES - 1);
                 }
-                // set initial values of rate categories
-                IntegerParameter other = new IntegerParameter(initialCategories);
-                categories.assignFromWithoutID(other);
-                categories.setLower(0);
-                categories.setUpper(LATTICE_SIZE_FOR_DISCRETIZED_RATES - 1);
             }
 
             if (!usingQuantiles) {

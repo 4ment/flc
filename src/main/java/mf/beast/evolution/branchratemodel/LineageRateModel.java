@@ -4,11 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import beast.base.core.Description;
-import beast.base.core.Input;
 import beast.base.evolution.branchratemodel.BranchRateModel;
 import beast.base.evolution.tree.Node;
-import beast.base.inference.CalculationNode;
-import beast.base.inference.parameter.RealParameter;
 
 public interface LineageRateModel extends BranchRateModel {
 
@@ -17,10 +14,7 @@ public interface LineageRateModel extends BranchRateModel {
     public Set<Node> getNodes();
 
     @Description(value = "Base implementation of a clock model.", isInheritable = false)
-    public abstract class Base extends CalculationNode implements LineageRateModel {
-
-        public Input<RealParameter> meanRateInput = new Input<RealParameter>("clock.rate",
-                "mean clock rate (defaults to 1.0)");
+    public abstract class Base extends beast.base.spec.evolution.branchratemodel.Base implements LineageRateModel {
 
         protected Set<Node> nodes = new HashSet<Node>();
 

@@ -5,14 +5,22 @@ import java.util.Arrays;
 import beast.base.core.*;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
-import beast.base.evolution.branchratemodel.BranchRateModel;
-import beast.base.inference.distribution.ParametricDistribution;
-import beast.base.inference.parameter.IntegerParameter;
-import beast.base.inference.parameter.RealParameter;
+import beast.base.inference.CalculationNode;
+import beast.base.inference.StateNode;
 import beast.base.inference.util.InputUtil;
+import beast.base.spec.domain.NonNegativeInt;
+import beast.base.spec.domain.NonNegativeReal;
+import beast.base.spec.domain.PositiveReal;
+import beast.base.spec.domain.UnitInterval;
+import beast.base.spec.evolution.branchratemodel.Base;
+import beast.base.spec.inference.distribution.ScalarDistribution;
+import beast.base.spec.inference.parameter.IntVectorParam;
+import beast.base.spec.inference.parameter.RealScalarParam;
+import beast.base.spec.inference.parameter.RealVectorParam;
+import beast.base.spec.type.IntVector;
+import beast.base.spec.type.RealScalar;
+import beast.base.spec.type.RealVector;
 import beast.base.util.Randomizer;
-
-import org.apache.commons.math.MathException;
 
 /**
  * @author Alexei Drummond
@@ -21,29 +29,29 @@ import org.apache.commons.math.MathException;
 @Description("Defines an uncorrelated relaxed molecular clock.")
 @Citation(value = "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and\n"
         + "  Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088", year = 2006, firstAuthorSurname = "drummond")
-public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
+public abstract class AbstractUCRelaxedClockModel extends Base {
 
-    public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr",
+    public Input<ScalarDistribution<RealScalar<? extends NonNegativeReal>, Double>> rateDistInput = new Input<>("distr",
             "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.",
             Input.Validate.REQUIRED);
-    public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories",
+    public Input<IntVector<NonNegativeInt>> categoryInput = new Input<>("rateCategories",
             "the rate categories associated with nodes in the tree for sampling of individual rates among branches.",
             Input.Validate.REQUIRED);
 
-    public Input<Integer> numberOfDiscreteRates = new Input<Integer>("numberOfDiscreteRates",
+    public Input<Integer> numberOfDiscreteRates = new Input<>("numberOfDiscreteRates",
             "the number of discrete rate categories to approximate the rate distribution by. A value <= 0 will cause the number of categories to be set equal to the number of branches in the tree. (default = -1)",
             -1);
 
-    public Input<RealParameter> quantileInput = new Input<RealParameter>("rateQuantiles",
+    public Input<RealVector<UnitInterval>> quantileInput = new Input<>("rateQuantiles",
             "the rate quantiles associated with nodes in the tree for sampling of individual rates among branches.",
             Input.Validate.XOR, categoryInput);
 
-    public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.",
+    public Input<Tree> treeInput = new Input<>("tree", "the tree this relaxed clock is associated with.",
             Input.Validate.REQUIRED);
-    public Input<Boolean> normalizeInput = new Input<Boolean>("normalize",
+    public Input<Boolean> normalizeInput = new Input<>("normalize",
             "Whether to normalize the average rate (default false).", false);
 
-    private Function meanRate;
+    private RealScalar<PositiveReal> meanRate;
 
     int LATTICE_SIZE_FOR_DISCRETIZED_RATES = 100;
 
@@ -84,26 +92,27 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
 
         if (usingQuantiles) {
             quantiles = quantileInput.get();
-            quantiles.setDimension(assignedBranchCount);
-            Double[] initialQuantiles = new Double[assignedBranchCount];
-            for (int i = 0; i < assignedBranchCount; i++) {
-                initialQuantiles[i] = Randomizer.nextDouble();
+            if (quantiles instanceof RealVectorParam<UnitInterval> quantilesParam) {
+                quantilesParam.setDimension(assignedBranchCount);
+                double[] initialQuantiles = new double[assignedBranchCount];
+                for (int i = 0; i < assignedBranchCount; i++) {
+                    initialQuantiles[i] = Randomizer.nextDouble();
+                }
+                RealVectorParam<UnitInterval> other = new RealVectorParam<>(initialQuantiles, UnitInterval.INSTANCE);
+                quantilesParam.assignFromWithoutID(other);
             }
-            RealParameter other = new RealParameter(initialQuantiles);
-            quantiles.assignFromWithoutID(other);
-            quantiles.setLower(0.0);
-            quantiles.setUpper(1.0);
         } else {
-            categories.setDimension(assignedBranchCount);
-            Integer[] initialCategories = new Integer[assignedBranchCount];
-            for (int i = 0; i < assignedBranchCount; i++) {
-                initialCategories[i] = Randomizer.nextInt(LATTICE_SIZE_FOR_DISCRETIZED_RATES);
+            if (categories instanceof IntVectorParam<NonNegativeInt> categoriesParam) {
+                categoriesParam.setDimension(assignedBranchCount);
+                int[] initialCategories = new int[assignedBranchCount];
+                for (int i = 0; i < assignedBranchCount; i++) {
+                    initialCategories[i] = Randomizer.nextInt(LATTICE_SIZE_FOR_DISCRETIZED_RATES);
+                }
+                IntVectorParam<NonNegativeInt> other = new IntVectorParam<>(initialCategories, NonNegativeInt.INSTANCE);
+                categoriesParam.assignFromWithoutID(other);
+                categoriesParam.setLower(0);
+                categoriesParam.setUpper(LATTICE_SIZE_FOR_DISCRETIZED_RATES - 1);
             }
-            // set initial values of rate categories
-            IntegerParameter other = new IntegerParameter(initialCategories);
-            categories.assignFromWithoutID(other);
-            categories.setLower(0);
-            categories.setUpper(LATTICE_SIZE_FOR_DISCRETIZED_RATES - 1);
         }
 
         distribution = rateDistInput.get();
@@ -117,7 +126,7 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
 
         meanRate = meanRateInput.get();
         if (meanRate == null) {
-            meanRate = new RealParameter("1.0");
+            meanRate = new RealScalarParam<>(1.0, PositiveReal.INSTANCE);
         }
 
         try {
@@ -154,7 +163,7 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
             renormalize = false;
         }
 
-        return getRawRate(node) * scaleFactor * meanRate.getArrayValue();
+        return getRawRate(node) * scaleFactor * meanRate.get();
     }
 
     /**
@@ -207,12 +216,12 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
             nodeNumber = node.getTree().getRoot().getNr();
         }
 
-        int category = categories.getValue(getCategoryIndex(nodeNumber));
+        int category = categories.get(getCategoryIndex(nodeNumber));
 
         if (rates[category] == 0.0) {
             try {
                 rates[category] = distribution.inverseCumulativeProbability((category + 0.5) / rates.length);
-            } catch (MathException e) {
+            } catch (RuntimeException e) {
                 throw new RuntimeException("Failed to compute inverse cumulative probability!");
             }
         }
@@ -228,8 +237,8 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
         }
 
         try {
-            return distribution.inverseCumulativeProbability(quantiles.getValue(getCategoryIndex(nodeNumber)));
-        } catch (MathException e) {
+            return distribution.inverseCumulativeProbability(quantiles.get(getCategoryIndex(nodeNumber)));
+        } catch (RuntimeException e) {
             throw new RuntimeException("Failed to compute inverse cumulative probability!");
         }
     }
@@ -257,18 +266,29 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
         recompute = false;
         renormalize = true;
 
-        if (rateDistInput.get().isDirtyCalculation()) {
+        if (rateDistInput.get().somethingIsDirty() || rateDistInput.get().isDirtyCalculation()) {
             recompute = true;
             return true;
         }
         // NOT processed as trait on the tree, so DO mark as dirty
-        if (categoryInput.get() != null && categoryInput.get().somethingIsDirty()) {
-            // recompute = true;
-            return true;
+        if (categories != null) {
+            IntVector<NonNegativeInt> c = categoryInput.get();
+            if (c instanceof StateNode s && s.somethingIsDirty()) {
+                return true;
+            }
+            if (c instanceof CalculationNode ca && ca.isDirtyCalculation()) {
+                return true;
+            }
         }
 
-        if (quantileInput.get() != null && quantileInput.get().somethingIsDirty()) {
-            return true;
+        if (quantiles != null) {
+            RealVector<UnitInterval> q = quantileInput.get();
+            if (q instanceof StateNode s && s.somethingIsDirty()) {
+                return true;
+            }
+            if (q instanceof CalculationNode c && c.isDirtyCalculation()) {
+                return true;
+            }
         }
 
         if (InputUtil.isDirty(meanRateInput)) {
@@ -298,9 +318,9 @@ public abstract class AbstractUCRelaxedClockModel extends BranchRateModel.Base {
         super.restore();
     }
 
-    ParametricDistribution distribution;
-    IntegerParameter categories;
-    RealParameter quantiles;
+    ScalarDistribution<RealScalar<? extends NonNegativeReal>, Double> distribution;
+    IntVector<NonNegativeInt> categories;
+    RealVector<UnitInterval> quantiles;
     Tree tree;
 
     private boolean normalize = false;
