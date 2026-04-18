@@ -3,6 +3,7 @@ package mf.beast.evolution.branchratemodel;
 import beast.base.evolution.branchratemodel.BranchRateModel;
 import beast.base.evolution.RateStatistic;
 import beast.base.evolution.tree.Node;
+import beast.base.spec.evolution.branchratemodel.Base;
 import beast.base.util.DiscreteStatistics;
 
 import java.io.PrintStream;
@@ -51,7 +52,7 @@ public class FLCRateStatistic extends RateStatistic {
     public void init(final PrintStream out) {
         super.init(out);
         for (BranchRateModel brm : map.keySet()) {
-            BranchRateModel.Base brm2 = (BranchRateModel.Base) brm;
+            Base brm2 = (Base) brm;
             String id = brm2.getID();
             if (id == null) {
                 id = "";

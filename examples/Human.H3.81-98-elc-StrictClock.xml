@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beast beautitemplate='Standard' beautistatus=''
-       namespace="beast.pkgmgmt:beast.base.core:beast.base.inference:
-       beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:
-       beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:
-       beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:
-       beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood"
-       required="" version="2.7">
+       namespace="beast.base.spec.inference.parameter:beast.base.spec.inference.operator:
+       beast.base.spec.inference.distribution:beast.base.spec.evolution.tree.coalescent:
+       beast.base.spec.evolution.sitemodel:beast.base.spec.evolution.likelihood:
+       beast.base.spec.evolution.operator:beast.base.spec.evolution.substitutionmodel:
+       beast.base.spec.evolution.branchratemodel:beast.base.spec.domain:
+       beast.base.evolution.alignment:beast.base.evolution.tree:
+       beast.pkgmgmt:beast.base.core:beast.base.inference:
+       beast.base.inference.operator:beast.base.evolution.operator:
+       beast.base.evolution.tree.coalescent"
+       version="2.8">
 
 
     <data id="fluA" name="alignment">
@@ -149,18 +153,6 @@
                   value="CAAAAACTTCCCGGAAATGACAACAGCACAGCAACGCTGTGCCTGGGGCATCATGCAGTGCCAAACGGAACTCTAGTGAAAACAATCACGAATGATCAAATTGAAGTGACTAATGCTACTGAGCTGGTCCAGAGTTCCTCAACAGGTAGAATATGCGACAGTCCTCACCGAATCCTCGATGGAAAAAACTGCACACTGATAGATGCTCTATTGGGAGACCCTCATTGTGATGGCTTCCAAAATAAGGAATGGGACCTTTTTGTTGAACGCAGCAAAGCTTACAGCAATTGTTACCCTTATGATGTGCCAGATTATGCCTCCCTTAGGTCACTAGTTGCCTCATCAGGCACCCTGGAGTTTATCAATGAAGACTTCAATTGGACTGGAGTCCCTCAGAATGGGGACAGCTATGCTTGCAAAAGGGGATCTGTTAAAAGTTTCTTTAGTAGATTGAATTGGTTGCACGAATCAGAATACAAATATCCAACGCTGAACGTGACTATGCCAAACAATGACAAATTTGACAAGTTGTACATTTGGGGGGTTCACCACCCGAGCACGGACAGAGAACAAACCAGCCTATATATTCGAGCATCAGGGAGAGTCACAGTCTCTACCAAAAGAAGCCAACAAACTGTAATCCCGAATATCGGGTCCAGACCCTGGGTAAGGGGTCTGTCCAGTAGAATAAGCATCTATTGGACAATAGTAAAACCGGGAGACATACTTTTGATTAATAGCACCGGGAATCTAATTGCTCCTCGGGGTTACTTCAAAATACGGACTGGGAAAAGCTCGATAATGAGGTCAGATGCACCCATTGGCACCTGCAGTTCTGAATGCATCACTCCAAATGGAAGCATCCCCAATGACAAACCTTTTCAAAATGTAAACAGGATCACATATGGGGCATGTCCCAGATATGTTAAGCAAAACACTCTGAAATTGGCAACAGGGATGCGGAATGTACCAGAGAAACAAACTAGA"/>
     </data>
 
-
-    <map name="Uniform">beast.base.inference.distribution.Uniform</map>
-    <map name="Exponential">beast.base.inference.distribution.Exponential</map>
-    <map name="LogNormal">beast.base.inference.distribution.LogNormalDistributionModel</map>
-    <map name="Normal">beast.base.inference.distribution.Normal</map>
-    <map name="Beta">beast.base.inference.distribution.Beta</map>
-    <map name="Gamma">beast.base.inference.distribution.Gamma</map>
-    <map name="LaplaceDistribution">beast.base.inference.distribution.LaplaceDistribution</map>
-    <map name="prior">beast.base.inference.distribution.Prior</map>
-    <map name="InverseGamma">beast.base.inference.distribution.InverseGamma</map>
-    <map name="OneOnX">beast.base.inference.distribution.OneOnX</map>
-
     <branchRateModel spec='mf.beast.evolution.branchratemodel.FlexibleLocalClockModel' id="branchRates"
                      tree='@Tree.t:fluA'>
         <rootClockModel id="rate.old"
@@ -252,20 +244,20 @@
                 </trait>
                 <taxonset idref="TaxonSet.fluA"/>
             </tree>
-            <parameter id="gammaShape.s:fluA" name="stateNode">0.5</parameter>
-            <parameter id="kappa.s:fluA" lower="0.0" name="stateNode">2.0</parameter>
+            <stateNode id="gammaShape.s:fluA" spec="RealScalarParam" domain="PositiveReal" value="0.5"/>
+            <stateNode id="kappa.s:fluA" spec="RealScalarParam" domain="PositiveReal" value="2.0"/>
 
-            <parameter id="clockRate.old" name="stateNode">1.0</parameter>
-            <parameter id="clockRate.new" name="stateNode">1.0</parameter>
+            <stateNode id="clockRate.old" spec="RealScalarParam" domain="PositiveReal" value="1.0"/>
+            <stateNode id="clockRate.new" spec="RealScalarParam" domain="PositiveReal" value="1.0"/>
 
-            <parameter id="popSize.t:fluA" name="stateNode">0.3</parameter>
-            <parameter id="freqParameter.s:fluA" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+            <stateNode id="popSize.t:fluA" spec="RealScalarParam" domain="PositiveReal"  value="0.3"/>
+            <stateNode id="freqParameter.s:fluA" spec="SimplexParam" value="0.25" dimension="4"/>
         </state>
 
-        <init id="RandomTree.t:fluA" spec="beast.base.evolution.tree.coalescent.RandomTree" estimate="false"
+        <init id="RandomTree.t:fluA" spec="RandomTree" estimate="false"
               initial="@Tree.t:fluA" taxa="@fluA">
             <populationModel id="ConstantPopulation0.t:fluA" spec="ConstantPopulation">
-                <parameter id="randomPopSize.t:fluA" name="popSize">1.0</parameter>
+                <popSize spec="RealScalarParam" domain="PositiveReal" value="1.0" estimate="false"/>
             </populationModel>
         </init>
 
@@ -278,33 +270,30 @@
                                    tree="@Tree.t:fluA"/>
                 </distribution>
 
-                <prior id="GammaShapePrior.s:fluA" name="distribution" x="@gammaShape.s:fluA">
-                    <Exponential id="Exponential.0a" name="distr">
-                        <parameter id="RealParameter.0" estimate="false" name="mean">1.0</parameter>
-                    </Exponential>
-                </prior>
-                <prior id="KappaPrior.s:fluA" name="distribution" x="@kappa.s:fluA">
-                    <LogNormal id="LogNormalDistributionModel.0" name="distr">
-                        <parameter id="RealParameter.1" estimate="false" name="M">1.0</parameter>
-                        <parameter id="RealParameter.2" estimate="false" name="S">1.25</parameter>
-                    </LogNormal>
-                </prior>
+                <distribution id="GammaShapePrior.s:fluA" spec="Exponential" param="@gammaShape.s:fluA">
+                    <mean spec="RealScalarParam" domain="PositiveReal" value="1.0" estimate="false"/>
+                </distribution>
+
+                <distribution id="KappaPrior.s:fluA" spec="LogNormal" param="@kappa.s:fluA">
+                    <M spec="RealScalarParam" domain="PositiveReal" value="1.0" estimate="false"/>
+                    <S spec="RealScalarParam" domain="PositiveReal" value="1.25" estimate="false"/>
+                </distribution>
+
+<!-- No more OneOnX class-->
+<!--
                 <prior id="PopSizePrior.t:fluA" name="distribution" x="@popSize.t:fluA">
                     <OneOnX id="OneOnX.1" name="distr"/>
                 </prior>
+ -->
 
                 <!-- clock rate priors   -->
-                <prior id="clockRatePrior.old" name="distribution" x="@clockRate.old">
-                    <Exponential id="Exponential.mean.old" name="distr">
-                        <parameter estimate="false" id="RealParameter.old" name="mean" value="0.3333"/>
-                    </Exponential>
-                </prior>
+                <distribution id="clockRatePrior.old" spec="Exponential" param="@clockRate.old">
+                    <mean spec="RealScalarParam" domain="PositiveReal" value="0.3333" estimate="false"/>
+                </distribution>
 
-                <prior id="clockRatePrior.new" name="distribution" x="@clockRate.new">
-                    <Exponential id="Exponential.mean.new" name="distr">
-                        <parameter estimate="false" id="RealParameter.new.0" name="mean" value="0.003"/>
-                    </Exponential>
-                </prior>
+                <distribution id="clockRatePrior.new" spec="Exponential" param="@clockRate.new">
+                    <mean spec="RealScalarParam" domain="PositiveReal" value="0.003" estimate="false"/>
+                </distribution>
 
             </distribution>
 
@@ -360,13 +349,11 @@
             </distribution>
 
             <distribution id="likelihood" spec="beast.base.inference.CompoundDistribution" useThreads="true">
-                <distribution id="treeLikelihood.fluA" spec="ThreadedTreeLikelihood" data="@fluA" tree="@Tree.t:fluA"
+                <distribution id="treeLikelihood.fluA" spec="TreeLikelihood" data="@fluA" tree="@Tree.t:fluA"
                               branchRateModel="@branchRates">
                     <siteModel id="SiteModel.s:fluA" spec="SiteModel" gammaCategoryCount="4" shape="@gammaShape.s:fluA">
-                        <parameter id="mutationRate.s:fluA" estimate="false" name="mutationRate">1.0</parameter>
-                        <parameter id="proportionInvariant.s:fluA" estimate="false" lower="0.0"
-                                   name="proportionInvariant" upper="1.0">0.0
-                        </parameter>
+                        <mutationRate spec="RealScalarParam" domain="PositiveReal" value="1.0" estimate="false"/>
+                        <proportionInvariant spec="RealScalarParam" domain="UnitInterval" value="0.0" estimate="false"/>
                         <substModel id="hky.s:fluA" spec="HKY" kappa="@kappa.s:fluA">
                             <frequencies id="estimatedFreqs.s:fluA" spec="Frequencies"
                                          frequencies="@freqParameter.s:fluA"/>
@@ -396,13 +383,13 @@
         <operator id="KappaScaler.s:fluA" spec="ScaleOperator" parameter="@kappa.s:fluA" scaleFactor="0.5"
                   weight="0.1"/>
 
-        <operator id="CoalescentConstantTreeScaler.t:fluA" spec="ScaleOperator" scaleFactor="0.5" tree="@Tree.t:fluA"
+        <operator id="CoalescentConstantTreeScaler.t:fluA" spec="ScaleTreeOperator" scaleFactor="0.5" tree="@Tree.t:fluA"
                   weight="3.0"/>
 
-        <operator id="CoalescentConstantTreeRootScaler.t:fluA" spec="ScaleOperator" rootOnly="true" scaleFactor="0.5"
+        <operator id="CoalescentConstantTreeRootScaler.t:fluA" spec="ScaleTreeOperator" rootOnly="true" scaleFactor="0.5"
                   tree="@Tree.t:fluA" weight="3.0"/>
 
-        <operator id="CoalescentConstantUniformOperator.t:fluA" spec="Uniform" tree="@Tree.t:fluA" weight="30.0"/>
+        <operator id="CoalescentConstantUniformOperator.t:fluA" spec="beast.base.evolution.operator.Uniform" tree="@Tree.t:fluA" weight="30.0"/>
 
         <operator id="CoalescentConstantSubtreeSlide.t:fluA" spec="SubtreeSlide" tree="@Tree.t:fluA" weight="15.0"/>
 
@@ -425,7 +412,7 @@
             <log idref="likelihood"/>
             <log idref="prior"/>
             <log idref="treeLikelihood.fluA"/>
-            <log id="TreeHeight.t:fluA" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@Tree.t:fluA"/>
+            <log id="TreeHeight.t:fluA" spec="beast.base.spec.evolution.TreeWithMetaDataLogger" tree="@Tree.t:fluA"/>
             <log idref="gammaShape.s:fluA"/>
             <log idref="kappa.s:fluA"/>
             <log idref="clockRate.old"/>
@@ -446,9 +433,10 @@
         </logger>
 
         <logger id="treelog.t:fluA" fileName="fluA-strictClock.$(seed).trees" logEvery="1000" mode="tree">
-            <log id="TreeWithMetaDataLogger.t:fluA" spec="beast.base.evolution.TreeWithMetaDataLogger"
+            <log id="TreeWithMetaDataLogger.t:fluA" spec="beast.base.spec.evolution.TreeWithMetaDataLogger"
                  branchratemodel="@branchRates" tree="@Tree.t:fluA"/>
         </logger>
+
     </run>
 
 </beast>

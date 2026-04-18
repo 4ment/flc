@@ -31,7 +31,7 @@ import beast.base.util.Randomizer;
         + "  Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088", year = 2006, firstAuthorSurname = "drummond")
 public abstract class AbstractUCRelaxedClockModel extends Base {
 
-    public Input<ScalarDistribution<RealScalar<? extends NonNegativeReal>, Double>> rateDistInput = new Input<>("distr",
+    public Input<ScalarDistribution<RealScalar<? extends NonNegativeReal>, Double>> rateDistInput = new Input<>("distribution",
             "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.",
             Input.Validate.REQUIRED);
     public Input<IntVector<NonNegativeInt>> categoryInput = new Input<>("rateCategories",
