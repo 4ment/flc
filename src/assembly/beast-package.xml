@@ -28,7 +28,7 @@
             <useProjectArtifact>true</useProjectArtifact>
             <scope>runtime</scope>
             <includes>
-                <include>io.github.compevol:flc</include>
+                <include>io.github.4ment:flc</include>
             </includes>
         </dependencySet>
     </dependencySets>
