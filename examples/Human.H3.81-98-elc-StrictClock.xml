@@ -297,7 +297,7 @@
 
             </distribution>
 
-            <distribution id="new.prior" monophyletic="true" spec="beast.base.evolution.tree.MRCAPrior"
+            <distribution id="new.prior" monophyletic="true" spec="beast.base.spec.evolution.tree.MRCAPrior"
                           tree="@Tree.t:fluA">
                 <taxonset id="taxonset.new" spec="TaxonSet">
                     <taxon id="A_Akita_1_1994" spec="Taxon"/>
